@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunwai swarm view</title>
+<link rel="stylesheet" href="swarm.css">
+</head>
+<body>
+<header>
+  <div class="brand"><b>Sunwai</b> <span>swarm view</span></div>
+  <div id="meko-badge" class="badge unknown" title="Meko status from /api/health">MEKO ...</div>
+  <div class="controls">
+    <div class="seg" id="window-seg">
+      <button data-w="300" class="on">5 min</button>
+      <button data-w="1800">30 min</button>
+      <button data-w="0">All</button>
+    </div>
+    <button id="play" title="Play history from the slider position">&#9654;</button>
+    <input id="slider" type="range" min="0" max="1000" value="1000" aria-label="Replay position">
+    <button id="live" class="on">LIVE</button>
+    <span id="clock">--:--:--</span>
+    <label class="admin"><input type="checkbox" id="show-admin"> admin</label>
+  </div>
+</header>
+
+<section id="counters">
+  <div class="ctr" data-k="notes"><b>0</b><span>notes</span></div>
+  <div class="ctr" data-k="reads"><b>0</b><span>reads</span></div>
+  <div class="ctr" data-k="promotions"><b>0</b><span>promotions</span></div>
+  <div class="ctr" data-k="directives"><b>0</b><span>directives</span></div>
+  <div class="ctr" data-k="approvals"><b>0</b><span>approvals</span></div>
+  <div class="ctr err" data-k="errors"><b>0</b><span>errors</span></div>
+  <div class="legend">
+    <i class="k-write"></i>write <i class="k-read"></i>read <i class="k-share"></i>share
+    <i class="k-promote"></i>promote <i class="k-approval"></i>approval
+  </div>
+</section>
+
+<main>
+  <div id="stage">
+    <svg id="graph" viewBox="0 0 900 540" preserveAspectRatio="xMidYMid meet"></svg>
+    <div id="off-note" hidden>
+      <b>MEKO OFF</b>
+      <span>No recall, no notes between departments, no verified lessons.<br>Every case starts from zero.</span>
+    </div>
+  </div>
+  <aside>
+    <div id="panel" hidden>
+      <div class="panel-head"><b id="panel-title"></b><button id="panel-close">&times;</button></div>
+      <ul id="panel-list"></ul>
+    </div>
+    <div class="stream-head">Message stream <span id="stream-n"></span></div>
+    <ul id="stream"></ul>
+  </aside>
+</main>
+<script src="swarm.js"></script>
+</body>
+</html>
