@@ -82,3 +82,8 @@ async def dept_event(body: DeptEventIn, request: Request) -> dict:
         return await _orch(request).dept_event(body.actor_role, body.kind, body.place, body.until, body.note, body.scripted)
     except FlowError as e:
         raise _fail(e) from None
+
+
+@router.get("/dean/patterns")
+async def dean_patterns(request: Request) -> dict:
+    return await _orch(request).dean.patterns()

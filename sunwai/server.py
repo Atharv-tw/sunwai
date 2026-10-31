@@ -8,8 +8,9 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from sunwai import __version__, config, incident_api, swarm_api
 from sunwai.calllog import CallLog
@@ -29,19 +30,27 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     store = Store(settings.db_path)
     meko = Meko(settings, calllog)
     app.state.calllog, app.state.store, app.state.meko, app.state.meko_error = calllog, store, meko, ""
-    try:
-        await meko.__aenter__()
-        # resolve (or create) every product datapack up front so the first report isn't slowed down
-        await asyncio.gather(*(meko.datapack_id(settings.datapack(a), actor="system") for a in config.AGENT_DATAPACKS))
-    except Exception as e:  # keep serving with Meko off; /api/health shows why
-        app.state.meko_error = f"{type(e).__name__}: {e}"[:300]
-        meko.enabled = False
-        log.error("Meko unavailable, running with Meko off: %s", app.state.meko_error)
+    if meko.enabled:
+        await _connect(app, meko)
     app.state.orchestrator = Orchestrator(store, meko, LLM(settings), settings)
     try:
         yield
     finally:
         await meko.__aexit__(None, None, None)
+
+
+async def _connect(app: FastAPI, meko: Meko) -> bool:
+    try:
+        await meko.connect()
+        # resolve (or create) every product datapack up front so the first report isn't slowed down
+        await asyncio.gather(*(meko.datapack_id(settings.datapack(a), actor="system") for a in config.AGENT_DATAPACKS))
+        app.state.meko_error = ""
+        return True
+    except Exception as e:  # keep serving with Meko off; /api/health shows why
+        app.state.meko_error = f"{type(e).__name__}: {e}"[:300]
+        meko.enabled = False
+        log.error("Meko unavailable, running with Meko off: %s", app.state.meko_error)
+        return False
 
 
 app = FastAPI(title="Sunwai", version=__version__, lifespan=lifespan)
@@ -61,6 +70,20 @@ def health(request: Request) -> dict:
         "datapack_prefix": settings.datapack_prefix,
         "llm_model": settings.llm_model,
     }
+
+
+class MekoSwitch(BaseModel):
+    enabled: bool
+
+
+@app.post("/api/meko")
+async def switch_meko(body: MekoSwitch, request: Request) -> dict:
+    """Turn Meko on or off at runtime for the side-by-side demo (D-012). Off = no recalls, no writes."""
+    meko: Meko = request.app.state.meko
+    meko.enabled = body.enabled
+    if body.enabled and not meko.connected and not await _connect(request.app, meko):
+        raise HTTPException(503, request.app.state.meko_error)
+    return health(request)
 
 
 app.mount("/", StaticFiles(directory=config.ROOT / "web", html=True), name="web")

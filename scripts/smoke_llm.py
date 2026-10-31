@@ -11,34 +11,10 @@ import statistics
 import sys
 
 from sunwai import config
+from sunwai.agents.desk import CATEGORIES, SYSTEM, TRIAGE_TOOL
 from sunwai.llm import LLM
 
-CATEGORIES = ["hostel_electrical", "hostel_plumbing", "mess_food", "wifi_network", "admin_documents", "safety", "other"]
-
-TRIAGE_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "file_incident",
-        "description": "File a campus grievance as a structured incident.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "category": {"type": "string", "enum": CATEGORIES},
-                "place": {"type": "string", "description": "Where, e.g. 'Hostel B, floor 2'"},
-                "severity": {"type": "string", "enum": ["low", "medium", "high"]},
-                "safety_risk": {"type": "boolean"},
-                "summary": {"type": "string", "description": "One neutral sentence, no names"},
-            },
-            "required": ["category", "place", "severity", "safety_risk", "summary"],
-        },
-    },
-}
-
-SYSTEM = (
-    "You are the front desk of a college grievance system. Read the student's complaint and call "
-    "file_incident exactly once. Never include names, phone numbers or roll numbers in the summary."
-)
-
+# the Desk agent's own triage tool and prompt, so these numbers describe what the product runs
 # (complaint in a student's own words, expected category)
 SAMPLES = [
     ("2nd floor geyser in hostel B tripped again, no hot water since morning", "hostel_electrical"),

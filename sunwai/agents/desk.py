@@ -49,7 +49,7 @@ SYSTEM = (
 # Canonical asset names, so "water heater" and "geyser" count as the same thing when matching
 ASSETS = [
     ("geyser", ("geyser", "water heater", "hot water")),
-    ("router", ("router", "wifi", "wi-fi", "wi fi", "internet", "network", "ip address", "lan")),
+    ("router", ("router", "wifi", "wi-fi", "wi fi", "internet", "network", "ip address", " lan ", " net ")),
     ("ro_water", ("ro water", "ro filter", "water cooler", "purifier", " ro ")),
     ("food", ("food", "dinner", "lunch", "breakfast", "paneer", "dal", "threw up", "vomit", "sick", "stomach")),
     ("fan", ("fan",)),
@@ -60,7 +60,7 @@ ASSETS = [
 ]
 
 KEYWORDS = [  # fallback classifier when the LLM is unreachable; order matters
-    ("wifi_network", ("wifi", "wi-fi", "wi fi", "router", "internet", "network", "ip address")),
+    ("wifi_network", ("wifi", "wi-fi", "wi fi", "router", "internet", "network", "ip address", " net ")),
     ("mess_food", ("mess", "food", "dinner", "lunch", "breakfast", "paneer", "threw up", "vomit", "ro water", "water cooler")),
     ("safety", ("fell", "pitch dark", "unsafe", "harass", "injur")),
     ("hostel_plumbing", ("tap", "leak", "water pressure", "flush", "pipe", "shower", "drain")),
@@ -220,8 +220,9 @@ class Desk(Agent):
 
     async def _create(self, student: str, t: Triage, scripted: bool) -> Incident:
         dept = DEPT_OF.get(t.category, "desk")
+        place = t.place or ("Mess" if dept == "mess" else "unknown")
         inc = Incident(
-            id=self.store.next_id(), dept=dept, category=t.category, place=t.place or "unknown",
+            id=self.store.next_id(), dept=dept, category=t.category, place=place,
             severity=t.severity, safety_risk=t.safety_risk, summary=t.summary, asset=t.asset, students=[student],
         )
         how = "the local model" if t.by == "llm" else "keyword rules (local model unavailable)"

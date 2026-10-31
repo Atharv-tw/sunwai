@@ -19,13 +19,35 @@ LABEL = {"hostel": "Hostel", "mess": "Mess", "it": "IT", "desk": "Desk"}
 DEFAULT_MINUTES = {"high": 240, "medium": 1440, "low": 4320}  # when nothing in memory says better
 
 TAG_RE = re.compile(r"\((\w+), ([\w_]+)\)")
-LESSON_RE = re.compile(r"fix: (.+?); takes about (\d+) min", re.S)
-TOOK_RE = re.compile(r"Took (\d+) min")
+TOOK_RE = re.compile(r"(?:Took|takes about) (\d+) min")
+SRC_RE = re.compile(r"\b(INC-\d{4})\b|\b(?:on|history) (\d{4}-\d\d-\d\d)\b")
+DATE_RE = re.compile(r"\b(\d{4}-\d\d-\d\d)\b")
 CUT_RE = re.compile(r"POWER CUT at (.+?) until (\d{4}-\d\d-\d\dT[\d:]+(?:[+-]\d\d:\d\d)?)")
 
 
 def hhmm(iso: str) -> str:
     return iso[11:16]
+
+
+def lesson_part(text: str, key: str) -> str:
+    """Lessons are 'LESSON (dept, asset) from SRC at PLACE | root cause: ... | fix: ... | takes about N min | ...'."""
+    for part in text.split(" | ")[1:]:
+        if part.startswith(f"{key}: "):
+            return part[len(key) + 2:].strip()
+    return ""
+
+
+def lesson_date(text: str) -> str:
+    m = DATE_RE.search(text.split(" | ")[0])
+    return m.group(1) if m else ""
+
+
+def source(text: str) -> str:
+    """Where a memory came from: an incident id, or 'history <date>' for seeded past cases."""
+    m = SRC_RE.search(text)
+    if not m:
+        return "a past case"
+    return m.group(1) or f"the {m.group(2)} case"
 
 
 def tag_matches(text: str, dept: str, asset: str) -> bool:
@@ -85,17 +107,19 @@ class Department(Agent):
 
         tag = self.tag(inc)
         lessons = [c for c in canon if c.text.startswith("LESSON") and tag_matches(c.text, self.name, tag)]
-        fixes = [c for c in own if c.text.startswith("FIX INC") and tag_matches(c.text, self.name, tag)]
+        fixes = [c for c in own if c.text.startswith("FIX ") and not c.text.startswith("FIX DID NOT HOLD")
+                 and tag_matches(c.text, self.name, tag)]
         failed = [c for c in own if c.text.startswith("FIX DID NOT HOLD") and tag_matches(c.text, self.name, tag)]
         cut = active_cut(own, inc.place)
 
         what = f"the {inc.asset.replace('_', ' ')}" if inc.asset else inc.category.replace("_", " ")
-        if lessons and (m := LESSON_RE.search(lessons[0].text)):
-            src = (re.search(r"from (INC-\d{4})", lessons[0].text) or [None, "a past case"])[1]
-            inc.plan = f"Verified fix from {src}: {m.group(1).strip()} Do this first."
-            minutes, why = int(m.group(2)), f"verified lesson from {src}: the fix takes ~{m.group(2)} min"
+        if lessons and (fix := lesson_part(lessons[0].text, "fix")):
+            src, took = source(lessons[0].text), TOOK_RE.search(lessons[0].text)
+            inc.plan = f"Verified fix from {src}: {fix.rstrip('.')}. Do this first."
+            minutes = int(took.group(1)) if took else DEFAULT_MINUTES[inc.severity]
+            why = f"verified lesson from {src}: the fix takes ~{minutes} min" if took else f"verified lesson from {src}; no duration on record"
         elif fixes:
-            src = (re.search(r"FIX (INC-\d{4})", fixes[0].text) or [None, "a past case"])[1]
+            src = source(fixes[0].text)
             note = fixes[0].text.split(": ", 1)[-1]
             inc.plan = f"Same fault fixed before ({src}): {note} Try that first; students never confirmed it held."
             took = TOOK_RE.search(fixes[0].text)
@@ -105,8 +129,7 @@ class Department(Agent):
             inc.plan = f"Inspect {what} at {inc.place}. No past fix on record."
             minutes, why = DEFAULT_MINUTES[inc.severity], f"no past fix on record: default for {inc.severity} severity"
         if failed:
-            src = (re.search(r"HOLD (INC-\d{4})", failed[0].text) or [None, "a past case"])[1]
-            inc.plan += f" Careful: the fix tried on {src} did not hold."
+            inc.plan += f" Careful: the fix tried on {source(failed[0].text)} did not hold."
 
         inc.fix_minutes, inc.eta_why = minutes, why
         inc.context = [c.api() for c in (lessons[:1] + fixes[:2] + failed[:1] + ([cut[0]] if cut else []))]
@@ -186,17 +209,22 @@ class Mess(Department):
 
     async def plan(self, inc: Incident, scripted: bool = False) -> None:
         await super().plan(inc, scripted)
+        self._safety_plan(inc)  # reports may have clustered while we were recalling
         await self.on_merge(inc, scripted)
+
+    @staticmethod
+    def _safety_plan(inc: Incident) -> None:
+        if inc.escalated and not inc.plan.startswith("FOOD SAFETY"):
+            inc.plan = (
+                f"FOOD SAFETY: {inc.reporters} students report the same problem ({inc.summary}). Hold the dish, keep "
+                f"samples, inspect the kitchen before the next meal. " + inc.plan
+            )
 
     async def on_merge(self, inc: Incident, scripted: bool = False) -> None:
         if inc.escalated or inc.asset != "food" or inc.reporters < self.CLUSTER:
             return
         inc.escalated, inc.severity, inc.safety_risk = True, "high", True
-        inc.plan = (
-            f"FOOD SAFETY: {inc.reporters} students report the same problem ({inc.summary}). Hold the dish, keep "
-            f"samples, inspect the kitchen before the next meal. " + inc.plan
-        )
-        inc.awaiting = self.staff if inc.status == "assigned" else inc.awaiting
+        self._safety_plan(inc)
         inc.log("mess", f"Mess agent: {inc.reporters} reports clustered into {inc.id}; escalated to the mess committee as a safety risk.", scripted)
         await self.remember(
             f"ESCALATED {inc.id} (mess, food) at {inc.place}: {inc.reporters} students reported {inc.summary}",

@@ -17,6 +17,7 @@ from sunwai.calllog import CallLog, CallRecord
 from sunwai.config import Settings
 
 USER_AGENT = f"sunwai/{__version__} (+https://github.com/Atharv-tw/sunwai)"
+CALL_TIMEOUT_S = 60  # a hung call must not stall an incident forever
 
 
 class MekoError(RuntimeError):
@@ -88,10 +89,14 @@ class Meko:
     async def __aenter__(self) -> Meko:
         if not self.enabled:
             return self
-        await self._connect()
+        await self.connect()
         return self
 
-    async def _connect(self) -> None:
+    @property
+    def connected(self) -> bool:
+        return self._client is not None
+
+    async def connect(self) -> None:
         if not self.settings.meko_api_key.startswith("mko_tkn_"):
             raise MekoError("MEKO_API_KEY is missing or malformed; copy .env.example to .env and set it")
         self._stack = AsyncExitStack()
@@ -108,6 +113,19 @@ class Meko:
     async def __aexit__(self, *exc: Any) -> None:
         if self._stack is not None:
             await self._stack.aclose()
+
+    async def _reconnect(self, broken: Client | None) -> None:
+        """The long-lived session dropped (idle timeout, network blip): open a new one, once per drop."""
+        async with self._lock("connect"):
+            if self._client is not broken:
+                return  # another call already reconnected
+            self._client = None
+            if self._stack is not None:
+                try:
+                    await self._stack.aclose()
+                except Exception:
+                    pass
+            await self.connect()
 
     async def list_tools(self) -> list[Any]:
         assert self._client is not None
@@ -135,13 +153,29 @@ class Meko:
             args["conversation_id"] = await self.conversation(actor, args.get("datapack_id", ""), scripted=scripted)
         start = time.perf_counter()
         ok, err, data = True, "", None
-        try:
-            result = await self._client.call_tool(tool, args)
-            data = _parse(result)
-            err = _error_of(data) or (str(data)[:500] if getattr(result, "is_error", False) else "")
-            ok = not err
-        except Exception as e:  # network, protocol
-            ok, err = False, f"{type(e).__name__}: {e}"[:500]
+        for attempt in (1, 2):
+            client = self._client
+            try:
+                if client is None:
+                    raise MekoError("not connected")
+                result = await asyncio.wait_for(client.call_tool(tool, args), CALL_TIMEOUT_S)
+                data = _parse(result)
+                err = _error_of(data) or (str(data)[:500] if getattr(result, "is_error", False) else "")
+                ok = not err
+                # MCP-level errors (e.g. "Connection reset by peer" inside Meko) are transient: retry once.
+                # Payload errors ({"error": ...}) are Meko saying no, so they are not retried.
+                if attempt == 1 and getattr(result, "is_error", False) and not _error_of(data):
+                    continue
+                break
+            except Exception as e:  # network, protocol, timeout: reconnect and retry once
+                ok, err = False, f"{type(e).__name__}: {e}"[:500]
+                if attempt == 2:
+                    break
+                try:
+                    await self._reconnect(client)
+                except Exception as e2:
+                    err = f"{err}; reconnect failed: {type(e2).__name__}: {e2}"[:500]
+                    break
         ms = (time.perf_counter() - start) * 1000
         if self.log is not None:
             self.log.record(

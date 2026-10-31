@@ -61,14 +61,15 @@ class Curator(Agent):
         if not fix:
             note = re.sub(r"\s*\(?\b\d+\s*min(?:ute)?s?\b\)?", "", inc.fix_note)
             root, fix, how = "", clean(note)[:300], "the staff fix note (local model unavailable)"
-        fix = fix.rstrip(".;") + "."
         held = len(inc.held)
-        text = (
-            f"LESSON ({inc.dept}, {inc.asset or inc.category}) from {inc.id} at {inc.place}: "
-            + (f"root cause: {root.rstrip('.;')}; " if root else "")
-            + f"fix: {fix}; takes about {inc.fix_took or inc.fix_minutes or 60} min. "
-            f"Held for {held} student{'s' if held != 1 else ''}; approved by the {approver}."
-        )
+        parts = [f"LESSON ({inc.dept}, {inc.asset or inc.category}) from {inc.id} at {inc.place}"]
+        if root:
+            parts.append(f"root cause: {root.rstrip('.;')}")
+        parts.append(f"fix: {fix.rstrip('.;')}")
+        if inc.fix_took:
+            parts.append(f"takes about {inc.fix_took} min")
+        parts.append(f"held for {held} student{'s' if held != 1 else ''}, approved by the {approver}")
+        text = " | ".join(parts)
         mid = await self.remember(text, summary=f"draft lesson from {inc.id}", scripted=scripted)
         inc.lesson = {"text": text, "memory_id": mid or None, "status": "draft"}
         inc.status, inc.awaiting = "lesson_pending", approver

@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 
 from sunwai.agents.base import building, pseudonym
 from sunwai.agents.curator import Curator
+from sunwai.agents.dean import Dean
 from sunwai.agents.department import Department, Mess
 from sunwai.agents.desk import Desk
 from sunwai.config import Settings
@@ -74,6 +75,7 @@ class Orchestrator:
             "it": Department("it", meko, llm, settings),
         }
         self.curator = Curator(meko, llm, settings)
+        self.dean = Dean(meko, llm, settings)
         self._tasks: set[asyncio.Task] = set()
 
     # --- background agent steps ---------------------------------------------
@@ -190,13 +192,17 @@ class Orchestrator:
             self._bg(inc, f"{inc.dept}: remembering the failed fix", dept.fix_failed(inc, note, scripted))
 
         elif action == "approve_lesson":
-            self._bg(inc, "curator: promoting lesson to canon", self.curator.approve(inc, actor_role, scripted))
+            self._bg(inc, "curator: promoting lesson to canon", self._promote(inc, actor_role, scripted))
 
         elif action == "reject_lesson":
             self.curator.reject(inc, actor_role, note, scripted)
 
         self.store.save(inc)
         return inc
+
+    async def _promote(self, inc: Incident, role: str, scripted: bool) -> None:
+        await self.curator.approve(inc, role, scripted)
+        self.dean.invalidate()
 
     async def _verified(self, inc: Incident, dept: Department, student: str, scripted: bool) -> None:
         await self.curator.record_confirmation(inc, student, True, scripted)
