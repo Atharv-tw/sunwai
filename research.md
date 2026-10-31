@@ -40,3 +40,12 @@ References we used, and what each one told us. Meko behaviour we measured oursel
 ## Observed (our own tests)
 
 _Filled in by `scripts/smoke_meko.py` runs: real tool argument names, write→searchable lag, what `memory_promote` and `memory_get_all(promoted=true)` actually return._
+
+## Meko friction log
+
+One line each: what was awkward, and our workaround. Evidence for `FEATURE_PROPOSAL.md`.
+
+| When | Who | Friction | Workaround |
+|---|---|---|---|
+| 31 Oct | Atharv | Learnings never cross datapacks, so one department can't hand a fact to another without writing into its datapack directly | Cross-write a note into the receiving agent's datapack (D-006) |
+| 31 Oct | Atharv | Product and coding agents can only be kept apart by convention; a key reaches every datapack in the account | Separate keys per client and a `sw-` prefix for product datapacks (D-005, D-010) |

@@ -1,7 +1,8 @@
 # Sunwai — agent instructions
 
 Team **Syzygy** (Atharv, Alok, Arun) at hackCBS 9.0, Meko Track B (Campus Grievance Swarm).
-Read `plan.md` for what we are building and `decisions.md` for what is already decided.
+Read `plan.md` for what we are building, `decisions.md` for what is already decided, and `TASKS.md` for
+who owns which files and the API contracts.
 
 ## Team protocol: the build datapack (required by the Meko challenge)
 

@@ -6,10 +6,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from sunwai import __version__, config
+from sunwai import __version__, config, swarm_api
 
 settings = config.load()
 app = FastAPI(title="Sunwai", version=__version__)
+app.include_router(swarm_api.router)
 
 
 @app.get("/api/health")

@@ -9,8 +9,11 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-# kind tells the swarm view how to draw the edge
-KINDS = ("write", "read", "promote", "share", "admin")
+# kind tells the swarm view how to draw the edge and which counter to bump:
+# write = note into own datapack, read = recall, promote = to shared layer,
+# share = note into another agent's datapack, approval = a person's decision written to Meko,
+# admin = datapack housekeeping (hidden by default)
+KINDS = ("write", "read", "promote", "share", "approval", "admin")
 
 
 @dataclass

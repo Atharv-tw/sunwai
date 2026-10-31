@@ -39,6 +39,7 @@ Open http://127.0.0.1:8765.
 - [decisions.md](decisions.md): decisions made during the build, and why
 - [research.md](research.md): references and what we learned
 - [result.md](result.md): numbers we measured
+- [TASKS.md](TASKS.md): who builds what, file ownership, API contracts
 - [TEAM_SETUP.md](TEAM_SETUP.md): Meko and repo setup for each teammate
 - [4060.md](4060.md): demo laptop runbook
 
