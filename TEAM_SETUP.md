@@ -5,11 +5,11 @@ Do this once at the start. Takes ~10 minutes each. Portal: https://cloud.mekodat
 Two rules before anything else:
 
 - **Your API key is yours.** Never paste it into chat, Slack, a commit, or a Meko memory. It is shown once; keep it in your own password manager or notes.
-- **`syzygy-build` is for coding agents only.** The app uses its own datapacks (`sw-*`). Never mix them.
+- **`syzygy-build` is for coding agents only.** The app uses its own datapacks (`sunwai-*`). Never mix them.
 
 ## Atharv (owner of `syzygy-build`)
 
-1. **Create the build datapack.** Sidebar → **Datapacks** → **Add Datapack** → name it `syzygy-build`.
+1. **Create the build datapack.** Sidebar → **Datapacks** → **Add Datapack** → name it `syzygy-build` (names are unique across all of Meko; if it's taken, pick another and update `CLAUDE.md`).
 2. **Invite the team.** Open `syzygy-build` → **Share** → **Invite people** → Alok's and Arun's Meko sign-in emails → role **Maintainer** (not Contributor: only Maintainers can promote) → **Send invite**.
 3. **Make two API keys.** **Settings → Security** (or the **Generate API key** button on the Connect page):
    - `atharv-claude-code`: for your coding agent
@@ -50,16 +50,16 @@ Two rules before anything else:
    - `Search syzygy-build in Meko: what did we decide about the stack?`: it should answer from Atharv's promoted decision D-003.
 7. **Promote your own decisions as you build** (Check T needs ≥10 promoted decisions from ≥2 of us). When you decide something the others must follow, tell your agent, e.g.:
 
-   > Save to syzygy-build and promote it: `[Alok] DECISION D-014: swarm view polls nothing, it only listens to /api/events over SSE because every edge must come from a logged Meko call`
+   > Save to syzygy-build and promote it: `[Alok] DECISION D-0xx (next free id in decisions.md): swarm view polls nothing, it only listens to /api/events over SSE because every edge must come from a logged Meko call`
 
    Then add the same row to `decisions.md` and commit. Aim for 3–5 each.
 
 ## Running the app on your laptop (optional)
 
-The app's memory lives in whichever Meko account its key belongs to. With your own key, the app makes its own `sw-*` datapacks in **your** account, which is fine for development. The demo uses Atharv's `sunwai-app` key so it has the seeded history.
+The app's memory lives in whichever Meko account its key belongs to. With your own key, the app makes its own datapacks in **your** account, which is fine for development. Datapack names are unique across the whole Meko platform, so give yours a different prefix. The demo uses Atharv's `sunwai-app` key so it has the seeded history.
 
 ```bash
-cp .env.example .env    # paste your key into MEKO_API_KEY
+cp .env.example .env    # paste your key into MEKO_API_KEY, set MEKO_DATAPACK_PREFIX=sunwai-alok- (or sunwai-arun-)
 ```
 
 ```bash

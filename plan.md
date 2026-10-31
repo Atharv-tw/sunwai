@@ -31,12 +31,12 @@ What the campus remembers, who is told what and when, and which calls stay human
 
 | Agent | Datapack | Job |
 |---|---|---|
-| Desk | `sw-desk` | Front door. Classifies a complaint in the student's own words, merges duplicates into one incident, replies with status, ETA and why |
-| Hostel | `sw-hostel` | Electrical/plumbing/geyser work. Recalls past fixes and canon lessons, proposes a plan and ETA to the caretaker |
-| Mess | `sw-mess` | Food and hygiene. Clusters sickness reports, escalates safety to the mess committee |
-| IT | `sw-it` | Wi-Fi/network. Merges "40 reports, one router" |
-| Curator | `sw-canon` | After a fix, asks affected students whether it held; drafts a lesson; asks the warden to approve; promotes it |
-| Dean | `sw-dean` | Reads only promoted canon; reports verified patterns ("RO filters fail every ~40 days") |
+| Desk | `sunwai-desk` | Front door. Classifies a complaint in the student's own words, merges duplicates into one incident, replies with status, ETA and why |
+| Hostel | `sunwai-hostel` | Electrical/plumbing/geyser work. Recalls past fixes and canon lessons, proposes a plan and ETA to the caretaker |
+| Mess | `sunwai-mess` | Food and hygiene. Clusters sickness reports, escalates safety to the mess committee |
+| IT | `sunwai-it` | Wi-Fi/network. Merges "40 reports, one router" |
+| Curator | `sunwai-canon` | After a fix, asks affected students whether it held; drafts a lesson; asks the warden to approve; promotes it |
+| Dean | `sunwai-dean` | Reads only promoted canon; reports verified patterns ("RO filters fail every ~40 days") |
 
 **People** (role switcher, no login): student, caretaker/warden, mess committee, IT cell, electricity staff, dean.
 
@@ -45,8 +45,8 @@ What the campus remembers, who is told what and when, and which calls stay human
 | Meko use | Where | Why it matters |
 |---|---|---|
 | `memory_search` / `context_search` before acting | every agent | Duplicate detection, recalling past fixes, honest ETAs from history |
-| `memory_add` into *another* agent's datapack | electricity staff → `sw-hostel`; Desk → department | Departments share what changes each other's plans (learnings never cross datapacks, so we write notes across) |
-| `memory_promote` after human approval | Curator → `sw-canon` | Fix → verified lesson → campus canon |
+| `memory_add` into *another* agent's datapack | electricity staff → `sunwai-hostel`; Desk → department | Departments share what changes each other's plans (learnings never cross datapacks, so we write notes across) |
+| `memory_promote` after human approval | Curator → `sunwai-canon` | Fix → verified lesson → campus canon |
 | `memory_get_all(promoted=true)` | Dean | Leadership sees only verified knowledge |
 | conversations per incident | Desk | Student can always see where it stands and why |
 | `MEKO_ENABLED=off` | whole app | Same flow without Meko: duplicates pile up, the later case starts from zero |

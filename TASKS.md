@@ -45,7 +45,7 @@ errors, and a burst (40 reads in 10 s). Never point it at `data/sunwai.db`.
 ### A3. Swarm view page (`web/swarm.html|js|css`): by 02:00
 Plain HTML/JS/SVG, no build step, no framework. Must have:
 1. **Nodes**: every person and agent from `/api/graph`; each agent has its datapack drawn as a small block beside it.
-2. **One edge per Meko call**: actor → datapack, animated when it arrives. Style by `kind`: write (solid, into own datapack), read (dashed), share (solid, orange, into *another* agent's datapack), promote (to `sw-canon`, highlighted), approval (from a person). Fade after a few seconds.
+2. **One edge per Meko call**: actor → datapack, animated when it arrives. Style by `kind`: write (solid, into own datapack), read (dashed), share (solid, orange, into *another* agent's datapack), promote (to `sunwai-canon`, highlighted), approval (from a person). Fade after a few seconds.
 3. **Counters**: notes (write+share), reads, promotions, directives (share), approvals, errors.
 4. **Message stream**: newest first, `actor → datapack: summary`; errors in red; `SCRIPTED` badge when `scripted`.
 5. **Time window + replay**: live 5 m / 30 m / all, plus a replay slider that redraws history from `/api/calls`.
@@ -116,7 +116,7 @@ GET /api/graph                         -> {people: [Node], agents: [Node], datap
 CallRecord = {id, ts, actor, tool, datapack, kind, summary, ms, ok, error, scripted}
   kind ∈ write | read | promote | share | approval | admin   (admin hidden by default)
   actor ∈ agent ids (desk, hostel, mess, it, curator, dean) or person roles (student, caretaker, warden, mess_committee, it_cell, electricity)
-Node = {id, label, type: "person" | "agent" | "datapack", datapack?: "sw-hostel"}
+Node = {id, label, type: "person" | "agent" | "datapack", datapack?: "sunwai-hostel"}
 ```
 
 ### Incident API (Atharv implements, Arun's screens use it)

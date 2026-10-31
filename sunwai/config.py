@@ -37,7 +37,7 @@ def load() -> Settings:
         meko_api_key=os.getenv("MEKO_API_KEY", ""),
         meko_mcp_url=os.getenv("MEKO_MCP_URL", "https://mcp.mekodata.ai/mcp"),
         meko_enabled=os.getenv("MEKO_ENABLED", "on").lower() in ("on", "1", "true", "yes"),
-        datapack_prefix=os.getenv("MEKO_DATAPACK_PREFIX", "sw-"),
+        datapack_prefix=os.getenv("MEKO_DATAPACK_PREFIX", "sunwai-"),
         llm_base_url=os.getenv("LLM_BASE_URL", "http://localhost:11434/v1"),
         llm_model=os.getenv("LLM_MODEL", "qwen3:4b"),
         llm_api_key=os.getenv("LLM_API_KEY", "ollama"),

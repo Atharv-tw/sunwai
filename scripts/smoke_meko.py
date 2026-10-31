@@ -3,7 +3,7 @@
     uv run python scripts/smoke_meko.py
 
 Writes tool schemas to data/meko_tools.json and a summary to data/smoke_meko.json.
-Uses a scratch datapack `sw-smoke` so product datapacks stay clean.
+Uses a scratch datapack `sunwai-smoke` so product datapacks stay clean.
 """
 
 from __future__ import annotations
@@ -65,12 +65,12 @@ async def main() -> int:
         lat, dps = await timed(meko, "datapack_list", {}, kind="admin")
         print("\ndatapack_list ->", json.dumps(dps, default=str)[:400])
 
-        dp = await meko.datapack_id("sw-smoke", actor="smoke")
-        print("sw-smoke id:", dp)
+        dp = await meko.datapack_id("sunwai-smoke", actor="smoke")
+        print("sunwai-smoke id:", dp)
 
         marker = uuid.uuid4().hex[:8]
         text = f"Smoke test {marker}: Hostel B second-floor geyser trips when the thermostat is set above 60C."
-        lat, added = await timed(meko, "memory_add", {"text": text, "agent_id": "smoke", "datapack_id": dp}, kind="write", datapack="sw-smoke")
+        lat, added = await timed(meko, "memory_add", {"text": text, "agent_id": "smoke", "datapack_id": dp}, kind="write", datapack="sunwai-smoke")
         print("\nmemory_add ->", json.dumps(added, default=str)[:400])
         added_ids = ids_in(added)
 
@@ -79,7 +79,7 @@ async def main() -> int:
         lag = None
         hit = None
         for _ in range(30):
-            _, res = await timed(meko, "memory_search", {"query": f"geyser thermostat {marker}", "datapack_id": dp, "limit": 5}, kind="read", datapack="sw-smoke")
+            _, res = await timed(meko, "memory_search", {"query": f"geyser thermostat {marker}", "datapack_id": dp, "limit": 5}, kind="read", datapack="sunwai-smoke")
             if marker in json.dumps(res, default=str):
                 lag = time.perf_counter() - t0
                 hit = res
@@ -97,18 +97,18 @@ async def main() -> int:
             ("context_search", {"query": "geyser", "datapack_id": dp, "limit": 5}, "read"),
             ("memory_get_all", {"datapack_id": dp}, "read"),
         ]:
-            ms = [(await timed(meko, tool, args, kind=kind, datapack="sw-smoke"))[0] for _ in range(N)]
+            ms = [(await timed(meko, tool, args, kind=kind, datapack="sunwai-smoke"))[0] for _ in range(N)]
             summary["latency_ms"][tool] = {"n": N, "p50": round(statistics.median(ms)), "max": round(max(ms))}
 
-        _, ctx = await timed(meko, "context_search", {"query": f"geyser {marker}", "datapack_id": dp}, kind="read", datapack="sw-smoke")
+        _, ctx = await timed(meko, "context_search", {"query": f"geyser {marker}", "datapack_id": dp}, kind="read", datapack="sunwai-smoke")
         print("\ncontext_search ->", json.dumps(ctx, default=str)[:500])
 
         # promote
         if mem_ids:
-            lat, promoted = await timed(meko, "memory_promote", {"memory_ids": mem_ids[:1], "datapack_id": dp, "agent_id": "smoke"}, kind="promote", datapack="sw-smoke")
+            lat, promoted = await timed(meko, "memory_promote", {"memory_ids": mem_ids[:1], "datapack_id": dp, "agent_id": "smoke"}, kind="promote", datapack="sunwai-smoke")
             summary["latency_ms"]["memory_promote"] = {"n": 1, "p50": round(lat), "max": round(lat)}
             print("\nmemory_promote ->", json.dumps(promoted, default=str)[:400])
-            _, shared = await timed(meko, "memory_get_all", {"datapack_id": dp, "promoted": True}, kind="read", datapack="sw-smoke")
+            _, shared = await timed(meko, "memory_get_all", {"datapack_id": dp, "promoted": True}, kind="read", datapack="sunwai-smoke")
             summary["promoted_visible_in_get_all"] = marker in json.dumps(shared, default=str)
             print("memory_get_all(promoted) ->", json.dumps(shared, default=str)[:400])
         else:

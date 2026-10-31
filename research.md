@@ -39,7 +39,18 @@ References we used, and what each one told us. Meko behaviour we measured oursel
 
 ## Observed (our own tests)
 
-_Filled in by `scripts/smoke_meko.py` runs: real tool argument names, write→searchable lag, what `memory_promote` and `memory_get_all(promoted=true)` actually return._
+31 Oct 2026, `scripts/smoke_meko.py` with the product key. Latency numbers are in `result.md`.
+
+- The live server exposes **42 tools**, not the 28 in the docs (extra: `amp_*` cluster/branch/compute tools, `track_token_usage`, artifacts, KB status).
+- **Almost every tool needs a `conversation_id`**, including `datapack_list` and `datapack_create`, even where the schema doesn't mark it required. The error is `conversation_id_required`. So each actor opens a conversation first (`conversation_create`, which needs none); a stable `session_id` reconnects the same one after a restart.
+- **Tools reject unknown arguments** (pydantic `unexpected_keyword_argument`), e.g. `agent_id` on `datapack_list`. Our client reads each tool's schema at connect and only adds what the tool accepts.
+- **Payload shape:** text content holding `{"result": "<JSON string>"}`. Tool failures come back *inside* that payload as `{"error": ..., "detail": ...}`, not as an MCP error.
+- **Datapack names are unique across the whole platform** (`CONFLICT … a datapack with this name already exists`). Hence the `sunwai-` prefix and per-teammate dev prefixes.
+- `datapack_search` returns `datapacks[].datapack_id` and `datapack_name` (not `id` / `name`), plus owner name and email: don't log raw responses.
+- `memory_add` returns the stored memory; `memory_search` returns `results[]` with `id`, `memory`, `score`, `raw_similarity_score`. Search is cross-agent within datapack + user; `agent_id` is attribution only.
+- `context_search` returns `results.{knowledge_base, memory, conversation}` plus `match_quality` and `agent_hint`.
+- `memory_promote` returns `inserted_ids`; the memory is **evicted from private memory** and appears in `memory_get_all(promoted=true)` → `promoted_memories[]` (`id`, `agent_id`, `data`). It did not show in `context_search`'s `knowledge_base` bucket within the first minute.
+- Meko's suggested `agent_id` for coding agents is `<client>:<repo>`, e.g. `claude_code:sunwai`.
 
 ## Meko friction log
 
@@ -48,4 +59,8 @@ One line each: what was awkward, and our workaround. Evidence for `FEATURE_PROPO
 | When | Who | Friction | Workaround |
 |---|---|---|---|
 | 31 Oct | Atharv | Learnings never cross datapacks, so one department can't hand a fact to another without writing into its datapack directly | Cross-write a note into the receiving agent's datapack (D-006) |
-| 31 Oct | Atharv | Product and coding agents can only be kept apart by convention; a key reaches every datapack in the account | Separate keys per client and a `sw-` prefix for product datapacks (D-005, D-010) |
+| 31 Oct | Atharv | Product and coding agents can only be kept apart by convention; a key reaches every datapack in the account | Separate keys per client and a `sunwai-` prefix for product datapacks (D-005, D-010) |
+| 31 Oct | Atharv | Memory search takes ~9 s per call (other calls ~2 s), so an agent that recalls before every step feels slow live | Run all of a step's recalls in parallel; read promoted canon with `memory_get_all(promoted=true)` (~1.8 s) (D-017) |
+| 31 Oct | Atharv | Every call needs a `conversation_id`, even listing datapacks; tools reject extra args; errors hide inside a JSON string | Client opens one conversation per actor, filters args by schema, unwraps `result` and checks `error` |
+| 31 Oct | Atharv | A promoted memory disappears from `memory_search`/`context_search` memory and isn't in the KB bucket right away, so there is a gap where nobody can recall it | Read canon through `memory_get_all(promoted=true)` |
+| 31 Oct | Atharv | Datapack names are global across all Meko users, so two teams can't both have `desk` | Team-specific prefix |

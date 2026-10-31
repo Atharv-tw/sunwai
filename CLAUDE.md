@@ -14,14 +14,15 @@ schemas, datapack names and gotchas. Only **promoted** memories reach the rest o
    Follow any promoted decision you find; if the task conflicts with one, stop and ask.
 2. **When a task ends, save a short summary.** `memory_add` to `syzygy-build`, text starting with your
    teammate name, e.g. `[Alok] summary: swarm view now streams calls over SSE from /api/events`.
-   Use `agent_id` = `<name>-<tool>` (e.g. `atharv-claude-code`).
+   Use Meko's coding-agent convention `agent_id` = `<client>:sunwai` (`claude_code:sunwai`, `codex:sunwai`);
+   the `[Name]` at the start of the text says who.
 3. **Promote every decision the others must follow.** `memory_add` the decision as
    `[Name] DECISION D-0xx: <what> because <why>`, then `memory_promote` it, then add the same entry to
    `decisions.md` with the memory id. Number decisions in order; check `decisions.md` for the next free id.
 4. **Never put keys or personal data in `syzygy-build`.** No `mko_tkn_…`, no `.env` values, no phone
    numbers, emails or real student names.
 5. **Never mix datapacks.** Coding agents only touch `syzygy-build`. The product's datapacks are
-   `sw-desk`, `sw-hostel`, `sw-mess`, `sw-it`, `sw-canon`, `sw-dean`; coding agents never read or write
+   `sunwai-desk`, `sunwai-hostel`, `sunwai-mess`, `sunwai-it`, `sunwai-canon`, `sunwai-dean`; coding agents never read or write
    them, and the product never reads `syzygy-build`.
 
 Who signs what: `[Atharv]`, `[Alok]`, `[Arun]`. Check T needs ≥10 promoted decisions from ≥2 of us.
