@@ -1,0 +1,67 @@
+# Sunwai — agent instructions
+
+Team **Syzygy** (Atharv, Alok, Arun) at hackCBS 9.0, Meko Track B (Campus Grievance Swarm).
+Read `plan.md` for what we are building and `decisions.md` for what is already decided.
+
+## Team protocol: the build datapack (required by the Meko challenge)
+
+Our coding agents share one Meko datapack: **`syzygy-build`**. It holds team decisions, API contracts,
+schemas, datapack names and gotchas. Only **promoted** memories reach the rest of the team.
+
+1. **Before every task, recall.** Resolve the `syzygy-build` datapack id once per session
+   (`datapack_search` with `name: "syzygy-build"`), then `context_search` it with the task's keywords.
+   Follow any promoted decision you find; if the task conflicts with one, stop and ask.
+2. **When a task ends, save a short summary.** `memory_add` to `syzygy-build`, text starting with your
+   teammate name, e.g. `[Alok] summary: swarm view now streams calls over SSE from /api/events`.
+   Use `agent_id` = `<name>-<tool>` (e.g. `atharv-claude-code`).
+3. **Promote every decision the others must follow.** `memory_add` the decision as
+   `[Name] DECISION D-0xx: <what> because <why>`, then `memory_promote` it, then add the same entry to
+   `decisions.md` with the memory id. Number decisions in order; check `decisions.md` for the next free id.
+4. **Never put keys or personal data in `syzygy-build`.** No `mko_tkn_…`, no `.env` values, no phone
+   numbers, emails or real student names.
+5. **Never mix datapacks.** Coding agents only touch `syzygy-build`. The product's datapacks are
+   `sw-desk`, `sw-hostel`, `sw-mess`, `sw-it`, `sw-canon`, `sw-dean`; coding agents never read or write
+   them, and the product never reads `syzygy-build`.
+
+Who signs what: `[Atharv]`, `[Alok]`, `[Arun]`. Check T needs ≥10 promoted decisions from ≥2 of us.
+
+## Repo files we keep current
+
+| File | What goes in it |
+|---|---|
+| `plan.md` | concept, architecture, milestones, submission checklist |
+| `decisions.md` | every build decision: id, author, what, why, Meko memory id |
+| `research.md` | references we used and what we learned from each (Meko behaviour we measured too) |
+| `result.md` | numbers we actually measured (latency, accuracy, Meko on vs off), with date and machine |
+| `4060.md` | runbook for the demo laptop (RTX 4060) |
+
+Never write a number into `result.md` that was not measured; say how it was measured.
+
+## Code layout
+
+- `sunwai/config.py` — all settings from `.env`
+- `sunwai/meko.py` — the only place that calls Meko; every call is logged for the swarm view
+- `sunwai/llm.py` — OpenAI-compatible client (Ollama by default)
+- `sunwai/agents/` — one module per agent (desk, department, curator, dean)
+- `sunwai/server.py` — FastAPI app, SSE stream, serves `web/`
+- `web/` — plain HTML/JS/SVG swarm view and role screens, no build step
+- `scripts/` — smoke tests and benchmarks
+
+## Commands
+
+```bash
+uv sync                                  # install deps
+uv run python scripts/smoke_meko.py      # Meko round trip + latency
+uv run python scripts/smoke_llm.py       # local model tool-calling check
+uv run sunwai                            # start the app on http://127.0.0.1:8765
+```
+
+## Conventions
+
+- Python 3.11+, type hints, small modules. No front-end build step.
+- Every Meko call goes through `sunwai/meko.py` so it shows up in the swarm view. No direct MCP calls elsewhere.
+- Nothing shown to a user as "context" unless Meko returned it; show the memory id next to it.
+- Anything scripted (seeded history, fast-forward clock, simulated students) is labelled `SCRIPTED` in the UI.
+- Student identities are pseudonymous (`S-xxxx`); scrub phone numbers, emails and roll numbers before any Meko write.
+- Commit small and often. Commit messages: short, imperative, about the change. No co-author trailers or tool attribution lines.
+- Secrets live only in `.env` (gitignored). Each person and machine uses its own Meko key.

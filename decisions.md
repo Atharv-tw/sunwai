@@ -1,0 +1,20 @@
+# Decisions
+
+Every team-wide decision, newest last. Each one is also saved to the `syzygy-build` Meko datapack as
+`[Name] DECISION D-0xx: … because …` and promoted (see `CLAUDE.md`). "Meko id" is filled in once promoted.
+
+| ID | By | Decision | Why | Meko id |
+|---|---|---|---|---|
+| D-001 | Atharv | Build Track B, Campus Grievance Swarm | A real, lived problem where shared context clearly changes outcomes; Track B scores Meko depth (25) and open models (10) | pending |
+| D-002 | Atharv | Product name **Sunwai**, repo `Atharv-tw/sunwai` (public, MIT) | "Sunwai" means a hearing, which is what a grievance wants; MIT keeps it simple for judges to reuse | pending |
+| D-003 | Atharv | Python (FastAPI + official MCP Python SDK) backend, plain HTML/JS/SVG front end, no front-end build step | One toolchain for three people; keeps README setup within 5 commands; SVG is enough for the swarm graph | pending |
+| D-004 | Atharv | Concept: **verified campus memory**. A fix becomes a lesson only after affected students confirm it held and a warden approves; only then is it promoted to canon; the dean reads only canon | Turns "fixed, then forgotten" and "leadership sees anecdotes" into verified knowledge; gives natural human-in-the-loop hand-offs (B2) and honesty (B5) | pending |
+| D-005 | Atharv | Product datapacks: one per agent, `sw-desk`, `sw-hostel`, `sw-mess`, `sw-it`, `sw-canon`, `sw-dean`; build datapack `syzygy-build` | Free tier allows 10 datapacks per account; 7 used leaves room; `sw-` prefix keeps product and build visibly apart | pending |
+| D-006 | Atharv | Departments share by writing a note **into the receiving agent's datapack** (e.g. power cut → `sw-hostel`) | Meko learnings never cross datapacks; an explicit cross-write is also one visible edge in the swarm view | pending |
+| D-007 | Atharv | Develop on `qwen3:4b` (GTX 1650, 4 GB); demo on `qwen3:8b` on the RTX 4060 laptop; LLM is any OpenAI-compatible endpoint set in `.env` | Open models running on our own laptop score highest; Qwen3 has reliable tool calling; switching provider is a setting, not a code change | pending |
+| D-008 | Atharv | Agents do narrow LLM jobs (classify, extract, draft) with JSON-schema or tool-call output; a deterministic state machine owns the incident flow | Small local models are reliable on narrow tasks and unreliable at long free-form planning; the demo must not stall | pending |
+| D-009 | Atharv | Every Meko call goes through `sunwai/meko.py`, which logs it to SQLite and streams it over SSE | The swarm view must be drawn only from real, logged Meko calls (B4) | pending |
+| D-010 | Atharv | Separate Meko API keys: each coding agent uses its owner's key; the product uses its own `sunwai-app` key from `.env` (gitignored); the demo laptop gets its own key | Keeps build and product apart, and any key can be revoked without breaking the others | pending |
+| D-011 | Atharv | Privacy: pseudonymous student ids (`S-xxxx`), regex scrub of phones/emails/roll numbers before any Meko write, every context card shows its Meko memory id | B5: no personal data the story doesn't need, nothing shown as context that Meko didn't return | pending |
+| D-012 | Atharv | `MEKO_ENABLED=on/off` switch runs the same flows with and without Meko | B3 asks to show that with Meko off, the later case doesn't benefit | pending |
+| D-013 | Atharv | Scripted parts (seeded history, fast-forward clock, simulated students) are badged `SCRIPTED` in the UI, but every step still calls Meko live | Allowed by the brief only if labelled; keeps the demo honest | pending |
