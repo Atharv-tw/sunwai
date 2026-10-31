@@ -78,10 +78,10 @@ sunwai/server.py (FastAPI)
 
 | By | Milestone | Status |
 |---|---|---|
-| 31 Oct 21:00 | Setup: repo public, docs, Meko connected, local model running, smoke numbers, decisions promoted | in progress |
-| 1 Nov 01:00 | Vertical slice: geyser case end to end through Meko, call wrapper + log | |
+| 31 Oct 21:00 | Setup: repo public, docs, Meko connected, local model running, smoke numbers, decisions promoted | done (model: `qwen3:4b-instruct`, D-025) |
+| 1 Nov 01:00 | Vertical slice: geyser case end to end through Meko, call wrapper + log | done 31 Oct 20:31 (`scripts/slice_geyser.py`) |
 | 1 Nov 04:00 | Swarm view live (graph, counters, stream, window/replay) | |
-| 1 Nov 07:00 | Breadth: Wi-Fi dedup, mess sickness escalation, power-cut ETA, Dean patterns, semester rollover, Meko on/off toggle | |
+| 1 Nov 07:00 | Breadth: Wi-Fi dedup, mess sickness escalation, power-cut ETA, Dean patterns, semester rollover, Meko on/off toggle | backend done except Dean on real data (needs `history.json` + reset) and semester rollover |
 | 1 Nov 10:00 | DESIGN.md, FEATURE_PROPOSAL.md, README ≤5 commands, result.md numbers, 4060 dry run, demo script, LinkedIn post | |
 | 1 Nov 12:00 | Buffer, submit | |
 
