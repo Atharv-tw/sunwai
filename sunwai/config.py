@@ -24,6 +24,7 @@ class Settings:
     llm_base_url: str
     llm_model: str
     llm_api_key: str
+    llm_parallel: int
     host: str
     port: int
     db_path: Path
@@ -41,6 +42,7 @@ def load() -> Settings:
         llm_base_url=os.getenv("LLM_BASE_URL", "http://localhost:11434/v1"),
         llm_model=os.getenv("LLM_MODEL", "qwen3:4b-instruct"),
         llm_api_key=os.getenv("LLM_API_KEY", "ollama"),
+        llm_parallel=int(os.getenv("LLM_PARALLEL", "2")),
         host=os.getenv("SUNWAI_HOST", "127.0.0.1"),
         port=int(os.getenv("SUNWAI_PORT", "8765")),
         db_path=ROOT / os.getenv("SUNWAI_DB", "data/sunwai.db"),

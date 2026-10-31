@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from dataclasses import dataclass
@@ -34,6 +35,8 @@ class LLM:
         self.client = AsyncOpenAI(
             base_url=settings.llm_base_url, api_key=settings.llm_api_key, timeout=90.0, max_retries=0
         )
+        # A local server runs one or two requests at a time; queue here so waiting doesn't eat the timeout.
+        self._slots = asyncio.Semaphore(settings.llm_parallel)
 
     async def chat(
         self,
@@ -50,16 +53,17 @@ class LLM:
         extra = {"think": think} if self.ollama else None
         if not think and not self.ollama:
             user = f"{user}\n/no_think"
-        start = time.perf_counter()
-        resp = await self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-            tools=tools,
-            tool_choice=tool_choice if tools else None,
-            temperature=temperature,
-            extra_body=extra,
-        )
-        seconds = time.perf_counter() - start
+        async with self._slots:
+            start = time.perf_counter()
+            resp = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+                tools=tools,
+                tool_choice=tool_choice if tools else None,
+                temperature=temperature,
+                extra_body=extra,
+            )
+            seconds = time.perf_counter() - start
         msg = resp.choices[0].message
         calls = []
         for tc in msg.tool_calls or []:

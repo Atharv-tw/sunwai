@@ -106,15 +106,16 @@ class Department(Agent):
         canon = lists[1]
 
         tag = self.tag(inc)
-        lessons = [c for c in canon if c.text.startswith("LESSON") and tag_matches(c.text, self.name, tag)]
+        lessons = [c for c in canon if c.text.startswith("LESSON") and tag_matches(c.text, self.name, tag)
+                   and lesson_part(c.text, "fix")]
         fixes = [c for c in own if c.text.startswith("FIX ") and not c.text.startswith("FIX DID NOT HOLD")
                  and tag_matches(c.text, self.name, tag)]
         failed = [c for c in own if c.text.startswith("FIX DID NOT HOLD") and tag_matches(c.text, self.name, tag)]
         cut = active_cut(own, inc.place)
 
         what = f"the {inc.asset.replace('_', ' ')}" if inc.asset else inc.category.replace("_", " ")
-        if lessons and (fix := lesson_part(lessons[0].text, "fix")):
-            src, took = source(lessons[0].text), TOOK_RE.search(lessons[0].text)
+        if lessons:
+            fix, src, took = lesson_part(lessons[0].text, "fix"), source(lessons[0].text), TOOK_RE.search(lessons[0].text)
             inc.plan = f"Verified fix from {src}: {fix.rstrip('.')}. Do this first."
             minutes = int(took.group(1)) if took else DEFAULT_MINUTES[inc.severity]
             why = f"verified lesson from {src}: the fix takes ~{minutes} min" if took else f"verified lesson from {src}; no duration on record"

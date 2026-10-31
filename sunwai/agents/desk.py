@@ -29,7 +29,16 @@ TRIAGE_TOOL = {
         "parameters": {
             "type": "object",
             "properties": {
-                "category": {"type": "string", "enum": CATEGORIES},
+                "category": {
+                    "type": "string", "enum": CATEGORIES,
+                    "description": (
+                        "hostel_electrical: geyser/water heater, fan, light, socket, power. "
+                        "hostel_plumbing: tap, leak, pipe, flush, shower pressure. "
+                        "mess_food: mess food, drinking/RO water. wifi_network: Wi-Fi, LAN, router. "
+                        "admin_documents: certificates, fees, forms. "
+                        "safety: someone hurt or could be hurt (fall, exposed wire, harassment). other: anything else."
+                    ),
+                },
                 "place": {"type": "string", "description": "Where, e.g. 'Hostel B, floor 2'"},
                 "severity": {"type": "string", "enum": ["low", "medium", "high"]},
                 "safety_risk": {"type": "boolean"},
@@ -128,6 +137,8 @@ class Desk(Agent):
                 place = str(a.get("place") or "")
                 if place.lower() in ("", "unknown", "not specified", "n/a"):
                     place = place_of(text)
+                elif building(place) and building(place) != building(text):
+                    place = place_of(text)  # the model named a building the student never mentioned
                 return Triage(
                     category=a["category"], place=place, severity=a.get("severity") if a.get("severity") in ("low", "medium", "high") else "medium",
                     safety_risk=bool(a.get("safety_risk")), summary=clean(str(a["summary"]))[:200],
@@ -225,7 +236,7 @@ class Desk(Agent):
             id=self.store.next_id(), dept=dept, category=t.category, place=place,
             severity=t.severity, safety_risk=t.safety_risk, summary=t.summary, asset=t.asset, students=[student],
         )
-        how = "the local model" if t.by == "llm" else "keyword rules (local model unavailable)"
+        how = "the local model" if t.by == "llm" else "keyword rules (local model unavailable or timed out)"
         inc.log("desk", f"Filed from {student}'s report; classified by {how} as {t.category}.", scripted)
         if dept == "desk":
             inc.plan = "No department in this campus model handles this; Desk logged it for the admin office."

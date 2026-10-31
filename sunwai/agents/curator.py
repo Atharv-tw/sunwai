@@ -51,7 +51,8 @@ class Curator(Agent):
         try:
             r = await self.llm.chat(
                 SYSTEM,
-                f"Incident: {inc.summary} at {inc.place}.\nPlan: {inc.plan}\nFix note from staff: {inc.fix_note}",
+                f"Incident: {inc.summary} at {inc.place}.\nPlan: {inc.plan}\n"
+                f"Fix note from staff: {re.sub(r'[(]?[0-9]+ *min[a-z]*[)]?', '', inc.fix_note)}",
                 tools=[LESSON_TOOL], tool_choice="required",
             )
             a = r.tool_calls[0].args if r.tool_calls else {}

@@ -88,11 +88,11 @@ call generated 1165 tokens and took 87.4 s; with `think: false` it still reasone
 
 ## Meko on vs off (product)
 
-Same scripted scenario, same model. Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
+Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct ~21:25 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
 
 | Measure | Meko on | Meko off |
 |---|---|---|
-| Incidents created from the Wi-Fi report burst | | |
+| Incidents from the burst: 40 Wi-Fi reports in different wording + 5 mess sickness reports, sent at once | 2 (Wi-Fi 40→1; mess 5→1, escalated to the mess committee as a safety risk); 32 Meko calls, 0 errors, 147.7 s | 45 (one per report); 0 Meko calls, 188.6 s |
 | Repeat geyser case (Hostel B): plan given | "Verified fix from INC-0001: reset the breaker, set thermostat to 55C" (cites canon memory id) | "Inspect the geyser. No past fix on record." |
 | Repeat geyser case: ETA given | 40 min (from the verified lesson) | 24 h (default for medium severity) |
 | Repeat geyser case: ETA vs actual | not measured yet | not measured yet |
