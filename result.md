@@ -42,7 +42,7 @@ Takeaway: every call costs ~2 s; anything that searches memory costs ~9 s, and p
 
 ## Geyser vertical slice (product, live Meko)
 
-`uv run python scripts/slice_geyser.py` against `uv run sunwai`, dev laptop, 31 Oct 2026 ~20:50 IST, fresh
+`uv run python scripts/slice_geyser.py` against `uv run sunwai`, dev laptop, 31 Oct 2026 20:29–20:31 IST, fresh
 `data/sunwai.db`, product datapacks just created (empty). The LLM was not installed yet, so Desk used its keyword
 fallback and the Curator built the lesson from the caretaker's note; the Meko side is the real flow.
 
