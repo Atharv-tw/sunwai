@@ -60,7 +60,7 @@ what Meko does in Sunwai, mention Meko, YugabyteDB and hackCBS 9.0. Post when At
 
 **Decisions you'll likely make (promote them):** SSE vs polling, edge colour/style per kind, how long edges stay, replay granularity, node layout.
 
-A1–A4 are merged into `main` (04f52f7). Your decisions are renumbered D-034..D-038 in `decisions.md`
+A1–A4 are merged into `main` (04f52f7). Atharv restyled `web/swarm.*` and every role screen in a light-theme overhaul (D-039); the data flow and your endpoints are unchanged, so pull before touching `web/`. Your decisions are renumbered D-034..D-038 in `decisions.md`
 (Meko still holds them as `[Alok] D-020..D-024`). Work on `main` from now on. The video and LinkedIn post (A5)
 move to the very end, recorded by Atharv on your laptop with the finished prototype.
 
