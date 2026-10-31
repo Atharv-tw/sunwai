@@ -199,6 +199,8 @@ class Desk(Agent):
                 inc = self.store.get(inc_id)
                 if inc is None or inc.status not in OPEN or inc.category != t.category:
                     continue
+                if inc.desk_memory and card.memory_id != inc.desk_memory:
+                    continue  # a memory from an older local DB that reused this id
                 a, b = building(inc.place), building(t.place)
                 if a and b and a != b:
                     continue
@@ -227,10 +229,11 @@ class Desk(Agent):
         if dept == "desk":
             inc.plan = "No department in this campus model handles this; Desk logged it for the admin office."
         self.store.add(inc)
-        await self.remember(
+        inc.desk_memory = await self.remember(
             f"{inc.id} ({dept}, {t.asset or t.category}) at {inc.place}: {t.summary}",
             summary=f"file {inc.id}: {t.summary[:60]}", scripted=scripted,
         )
+        self.store.save(inc)
         return inc
 
     async def hand_off(self, inc: Incident, scripted: bool = False) -> None:

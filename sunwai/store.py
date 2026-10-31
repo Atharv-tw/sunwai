@@ -18,7 +18,7 @@ OPEN = ("reported", "assigned", "in_progress")  # a new report about the same th
 
 # fields kept for the flow but not part of the Incident API shape
 _INTERNAL = (
-    "students", "held", "broken", "fix_note", "fix_minutes", "fix_took", "eta_why", "escalated",
+    "students", "desk_memory", "held", "broken", "fix_note", "fix_minutes", "fix_took", "eta_why", "escalated",
     "plan_approved_ts", "created", "updated", "merges",
 )
 
@@ -49,6 +49,7 @@ class Incident:
     working: str | None = None  # agent step in flight, e.g. "hostel: recalling past fixes"
     # internal
     students: list[str] = field(default_factory=list)
+    desk_memory: str = ""  # id of Desk's memory for this incident; only that memory can merge reports into it
     held: list[str] = field(default_factory=list)
     broken: list[str] = field(default_factory=list)
     fix_note: str = ""
