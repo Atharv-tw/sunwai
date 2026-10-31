@@ -35,6 +35,7 @@ Open http://127.0.0.1:8765.
 
 ## Docs
 
+- [DESIGN.md](DESIGN.md): one-page design note: who does what, where Meko is used and why, Meko on vs off
 - [plan.md](plan.md): what we're building and how Meko is used
 - [decisions.md](decisions.md): decisions made during the build, and why
 - [research.md](research.md): references and what we learned

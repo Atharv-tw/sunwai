@@ -88,7 +88,7 @@ sunwai/server.py (FastAPI)
 ## Submission checklist
 
 - [ ] Public repo, README setup in ≤5 commands
-- [ ] `DESIGN.md`: one page, who does what, where Meko is used and why
+- [x] `DESIGN.md`: one page, who does what, where Meko is used and why
 - [ ] Demo ≤5 min with swarm view open
 - [ ] `FEATURE_PROPOSAL.md`: friction, feature, MCP interface with example call + response, scenario before/after, why new, risks
 - [ ] Check T: `syzygy-build` has ≥10 promoted decisions from ≥2 teammates, each signed; judges invited as Viewers
