@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunwai</title>
+</head>
+<body>
+  <h1>Sunwai</h1>
+  <p>Campus grievances, heard and remembered. Swarm view coming soon.</p>
+  <pre id="health">checking…</pre>
+  <script>
+    fetch("/api/health").then(r => r.json()).then(h => {
+      document.getElementById("health").textContent = JSON.stringify(h, null, 2);
+    });
+  </script>
+</body>
+</html>
