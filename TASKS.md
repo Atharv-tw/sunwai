@@ -21,7 +21,7 @@ Who builds what until 1 Nov 12:00. Finish [TEAM_SETUP.md](TEAM_SETUP.md) first.
 
 | Owner | Files |
 |---|---|
-| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator}.py`, `sunwai/agents/*`, `scripts/smoke_*` |
+| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator,incident_api}.py`, `sunwai/agents/*`, `scripts/smoke_*`, `scripts/slice_*` |
 | Alok | `sunwai/swarm_api.py`, `web/swarm.html`, `web/swarm.js`, `web/swarm.css`, `scripts/fake_calls.py` |
 | Arun | `sunwai/privacy.py`, `tests/test_privacy.py`, `scenarios/*`, `web/index.html`, `web/student.*`, `web/staff.*`, `web/common.css`, `FEATURE_PROPOSAL.md` |
 
@@ -122,24 +122,34 @@ Node = {id, label, type: "person" | "agent" | "datapack", datapack?: "sunwai-hos
 ### Incident API (Atharv implements, Arun's screens use it)
 
 ```
-POST /api/grievances                 {student_seed, text}                     -> Incident
-GET  /api/incidents?dept=&status=                                             -> [Incident]
+POST /api/grievances                 {student_seed, text, scripted?}          -> Incident + {student_id: "S-xxxx"}
+GET  /api/incidents?dept=&status=                                             -> [Incident]   newest first
 GET  /api/incidents/{id}                                                      -> Incident
-GET  /api/students/{student_id}/incidents                                     -> [Incident]
-POST /api/incidents/{id}/actions     {actor_role, action, note?}              -> Incident
+GET  /api/students/{student_id}/incidents                                     -> [Incident]   S-xxxx id or the raw seed
+POST /api/incidents/{id}/actions     {actor_role, action, note?, student_seed?, scripted?} -> Incident
        action ∈ approve_plan | record_fix | confirm_fixed | still_broken | approve_lesson | reject_lesson
-POST /api/dept-events                {actor_role: "electricity", kind: "power_cut", place, until, note?} -> {notes_written: [datapack]}
+       errors: 403 wrong role for this dept/action, 409 not allowed in the current status
+POST /api/dept-events                {actor_role: "electricity", kind: "power_cut", place, until: "22:00" | ISO, note?, scripted?} -> {notes_written: [datapack]}
+GET  /api/dean/patterns                                                       -> {lessons: [{memory_id, dept, asset, text, promoted_at}], patterns: [{text, memory_ids}]}
 
 Incident = {
-  id: "INC-0007", dept: "hostel" | "mess" | "it", category, place, severity, safety_risk, summary,
+  id: "INC-0007", dept: "hostel" | "mess" | "it" | "desk", category, place, severity, safety_risk, summary,
+  asset: "geyser",                     # normalised broken thing: geyser, router, food, ro_water, fan, light, tap, ...
   status: reported | assigned | in_progress | fixed | verified | lesson_pending | closed,
   reporters: 12,                       # duplicates merged into this incident
   eta: ISO-8601 | null, eta_reason: "power cut until 22:00 (electricity)",
   plan: "Check thermostat first: same fault last winter",
   context: [{memory_id, datapack, text, source: "memory" | "knowledge_base" | "conversation"}],
   timeline: [{ts, actor, text, scripted}],
-  awaiting: "caretaker" | "student" | "warden" | "mess_committee" | "it_cell" | null
+  awaiting: "caretaker" | "student" | "warden" | "mess_committee" | "it_cell" | null,
+  lesson: {text, memory_id, status: "draft" | "promoted" | "rejected" | "unsaved"} | null,
+  working: "hostel: recalling past fixes and verified lessons" | null,   # agent step in flight: show a spinner
+  confirmations: {held: 1, broken: 0}
 }
 ```
+
+Who may act (403 otherwise): hostel → `caretaker` (or `warden`) approves plans and records fixes, `warden` approves
+lessons; mess → `mess_committee` for both; it → `it_cell` for both; `student` confirms or says still broken.
+`scripted: true` labels timeline entries and the Meko calls they cause as SCRIPTED (D-013). Contract additions: D-019.
 
 Change a contract only by promoting a decision to `syzygy-build` and editing this file in the same commit.
