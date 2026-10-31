@@ -108,6 +108,8 @@ class Department(Agent):
         tag = self.tag(inc)
         lessons = [c for c in canon if c.text.startswith("LESSON") and tag_matches(c.text, self.name, tag)
                    and lesson_part(c.text, "fix")]
+        # newest first; a lesson from a live incident carries no date and is newer than any seeded history
+        lessons.sort(key=lambda c: lesson_date(c.text) or "9999", reverse=True)
         fixes = [c for c in own if c.text.startswith("FIX ") and not c.text.startswith("FIX DID NOT HOLD")
                  and tag_matches(c.text, self.name, tag)]
         failed = [c for c in own if c.text.startswith("FIX DID NOT HOLD") and tag_matches(c.text, self.name, tag)]

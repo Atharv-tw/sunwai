@@ -123,6 +123,72 @@ pattern-report write skipped).
   a verified fix 2 times" came from the 2 leftover test lessons.) No geyser lesson is left in canon, so the demo's
   Hostel A case plans from the seeded, unverified past fixes.
 
+## Full rehearsal on the seeded datapacks, swarm view open
+
+1 Nov 2026, GTX 1650 dev laptop, qwen3:4b-instruct (`LLM_PARALLEL=2`). `scripts/run_scenario.py --speed 0` against
+`uv run sunwai` with a scratch DB per side (`data/rehearsal-on.db`, `data/rehearsal-off.db`). The product datapacks
+were in the seeded state above. `swarm.html` was open in a browser at 1366×768 the whole time. This run leaves the
+datapacks no longer seeded: they hold the run's memories and one promoted geyser lesson, so reset, delete that
+lesson in the Meko UI and seed again before the demo (4060.md §5b).
+
+| Measure | Meko on (03:24–03:29 IST) | Meko off (03:31–03:34 IST) |
+|---|---|---|
+| Incidents from 57 steps | 4: geyser Hostel A 3→1, Wi-Fi 40→1, mess 5→1 (escalated as food safety), geyser Hostel B | 49 |
+| Runner wall time | 248.1 s | 149.7 s |
+| Meko calls during the run (admin excluded) | 46, 0 errors: 26 read, 7 write, 6 share, 6 approval, 1 promote | 0 |
+| Hostel A plan | Seeded fix the students never confirmed ("the 2026-01-09 case … Reset the breaker"); ETA moved from 03:45 to 04:35, behind the power cut until 04:15, citing the note's memory id | "No past fix on record", default ETA; power cut wrote no notes |
+| Wi-Fi plan | Seeded verified router lesson from canon (see the fix below) | "No past fix on record" × 40 |
+| Hostel B plan | "Verified fix from INC-0001: Reset the breaker and set thermostat to 55C", 40 min, citing canon memory `2a9bf23c`, which was promoted at 03:26:29, about 3 min earlier | "No past fix on record", default ETA; the approved lesson was not saved |
+
+Latency per call in the Meko-on run (including 3 Dean calls made after it):
+
+| Tool | n | p50 ms | max ms |
+|---|---|---|---|
+| `memory_search` | 22 | 13474 | 15563 |
+| `knowledgebase_search` | 4 | 2872 | 3162 |
+| `memory_add` | 20 | 2489 | 6334 |
+| `memory_promote` | 1 | 3476 | 3476 |
+| `memory_get_all` | 2 | 1678 | 1721 |
+
+**Swarm view against the log.** At the end of the run, in the "All" window, every counter equalled the count from
+`/api/calls`:
+- notes 13, reads 26, promotions 1, directives 6, approvals 6, errors 0;
+- the stream held 46 rows;
+- each datapack block's call count matched (desk 17, hostel 10, mess 5, IT 5, canon 9).
+
+On the replay slider:
+- at the power cut, two share edges ran from Electricity to Hostel and IT;
+- at the promotion, an approval edge and the promote edge ran into Canon.
+
+With Meko off, the view showed MEKO OFF over a dark graph and zero counters. `POST /api/meko` off and back on, on the
+running server, switched the badge and the overlay, and reconnected without error.
+
+**Dean screen after the run.**
+- Patterns: router about every 49 days and RO about every 40 days.
+- Lessons: 7 listed (6 seeded, badged SCRIPTED, plus the new geyser lesson).
+- With one geyser lesson there is no geyser pattern.
+
+**Fixed after the run.** The Wi-Fi plan had cited the older of the two verified router lessons (2026-08-04, 90 min)
+because it took the first search hit. Departments now take the newest matching lesson, and a live incident's lesson
+counts as newest. One Block C report on the real app afterwards got "Verified fix from the 2026-09-22 case … moved
+the router out of the cabinet", 75 min.
+
+**Found, not fixed.**
+- The promoted lesson says "held for 1 student". The Curator drafts it at the first confirmation. The second
+  student's confirmation came 12 s later, before the warden approved. It is logged as an approval, but it is not in
+  the lesson text.
+- Swarm view: on a paused replay position, edges still fade on real-time timers, so the frame loses its edges after
+  up to 6 s (`web/swarm.js`, `drawEdge`).
+
+**Setup from a fresh clone (README).** 1 Nov ~03:20:
+- `git clone` and `cp .env.example .env` took 5.1 s.
+- `ollama pull qwen3:4b-instruct` took 3.4 s (the model was already local).
+- `uv run sunwai` answered `/api/health` at once. The uv cache on this laptop was warm, so this is not a cold
+  install.
+- Every page and API route returned 200.
+- One complaint was classified by the local model and planned in 18.3 s.
+- Run with `MEKO_ENABLED=off` and the product key, so the product datapacks were not touched.
+
 ## Meko on vs off (product)
 
 Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct 21:10–21:16 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
