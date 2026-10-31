@@ -4,9 +4,9 @@ Who builds what until 1 Nov 12:00. Finish [TEAM_SETUP.md](TEAM_SETUP.md) first.
 
 | Person | Agent | Owns |
 |---|---|---|
-| Atharv | Claude Code | backend core: Meko client, incident flow, agents, incident API |
+| Atharv | Claude Code | backend core: Meko client, incident flow, agents, incident API; since D-029 also R1–R4 (privacy, scenario data, role screens, feature proposal) |
 | Alok | Claude Code | **swarm view** (B4) and the demo video / LinkedIn post |
-| Arun | Codex | **privacy + scenario data** (B5), **student and staff screens**, feature proposal draft |
+| Arun | Codex | unavailable: his R1–R4 moved to Atharv (D-029) |
 
 ## How we work
 
@@ -21,9 +21,8 @@ Who builds what until 1 Nov 12:00. Finish [TEAM_SETUP.md](TEAM_SETUP.md) first.
 
 | Owner | Files |
 |---|---|
-| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator,incident_api}.py`, `sunwai/agents/*`, `scripts/smoke_*`, `scripts/slice_*` |
+| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator,incident_api}.py`, `sunwai/agents/*`, `scripts/smoke_*`, `scripts/slice_*`; from Arun (D-029): `sunwai/privacy.py`, `tests/test_privacy.py`, `scenarios/*`, `web/index.html`, `web/student.*`, `web/staff.*`, `web/common.css`, `FEATURE_PROPOSAL.md` |
 | Alok | `sunwai/swarm_api.py`, `web/swarm.html`, `web/swarm.js`, `web/swarm.css`, `scripts/fake_calls.py` |
-| Arun | `sunwai/privacy.py`, `tests/test_privacy.py`, `scenarios/*`, `web/index.html`, `web/student.*`, `web/staff.*`, `web/common.css`, `FEATURE_PROPOSAL.md` |
 
 ---
 
@@ -63,7 +62,7 @@ what Meko does in Sunwai, mention Meko, YugabyteDB and hackCBS 9.0. Post when At
 
 ---
 
-## Arun — privacy, scenario, role screens (Codex)
+## R1–R4 — privacy, scenario, role screens (was Arun's; Atharv's since D-029)
 
 ### R1. Privacy (`sunwai/privacy.py` + `tests/test_privacy.py`): by 21:30
 - `scrub(text) -> tuple[str, list[str]]`: replace phone numbers (Indian 10-digit, +91), emails, roll/enrolment numbers (agree a pattern, e.g. `2K23/CO/123`, `23BCS123`), and names after "my name is" / "I am" with `[phone]`, `[email]`, `[roll]`, `[name]`; return what kinds were removed.
