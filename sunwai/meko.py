@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from contextlib import AsyncExitStack
@@ -81,11 +82,16 @@ class Meko:
         self._client: Client | None = None
         self._datapack_ids: dict[str, str] = {}
         self._conversations: dict[tuple[str, str], str] = {}
+        self._locks: dict[object, asyncio.Lock] = {}  # parallel recalls must not open the same thing twice
         self._params: dict[str, set[str]] = {}  # tool -> accepted argument names
 
     async def __aenter__(self) -> Meko:
         if not self.enabled:
             return self
+        await self._connect()
+        return self
+
+    async def _connect(self) -> None:
         if not self.settings.meko_api_key.startswith("mko_tkn_"):
             raise MekoError("MEKO_API_KEY is missing or malformed; copy .env.example to .env and set it")
         self._stack = AsyncExitStack()
@@ -98,7 +104,6 @@ class Meko:
         for t in await self.list_tools():
             schema = getattr(t, "input_schema", None) or {}
             self._params[t.name] = set(schema.get("properties") or {})
-        return self
 
     async def __aexit__(self, *exc: Any) -> None:
         if self._stack is not None:
@@ -127,7 +132,7 @@ class Meko:
         if "agent_id" in accepts:
             args.setdefault("agent_id", agent_id(actor))
         if "conversation_id" in accepts and "conversation_id" not in args:
-            args["conversation_id"] = await self.conversation(actor, args.get("datapack_id", ""))
+            args["conversation_id"] = await self.conversation(actor, args.get("datapack_id", ""), scripted=scripted)
         start = time.perf_counter()
         ok, err, data = True, "", None
         try:
@@ -151,29 +156,39 @@ class Meko:
 
     # --- conversations -----------------------------------------------------
 
-    async def conversation(self, actor: str, datapack_id: str = "") -> str:
+    def _lock(self, key: object) -> asyncio.Lock:
+        return self._locks.setdefault(key, asyncio.Lock())
+
+    async def conversation(self, actor: str, datapack_id: str = "", *, scripted: bool = False) -> str:
         """One working conversation per (actor, datapack). Meko needs a conversation_id on nearly every call.
 
         session_id is stable, so a restart reconnects the same conversation instead of making a new one.
         """
         key = (actor, datapack_id)
-        if key not in self._conversations:
-            made = await self.call(
-                "conversation_create",
-                {"agent_id": agent_id(actor), "title": f"{actor} work log", "datapack_id": datapack_id or None,
-                 "session_id": f"sunwai:{actor}:{datapack_id or 'default'}"},
-                actor=actor, kind="admin", summary=f"open {actor} conversation",
-            )
-            conv = _first_key(made, ("conversation_id", "id"))
-            if not conv:
-                raise MekoError(f"conversation_create returned no id: {made!r}")
-            self._conversations[key] = conv
+        async with self._lock(key):
+            if key not in self._conversations:
+                made = await self.call(
+                    "conversation_create",
+                    {"agent_id": agent_id(actor), "title": f"{actor} work log", "datapack_id": datapack_id or None,
+                     "session_id": f"sunwai:{actor}:{datapack_id or 'default'}"},
+                    actor=actor, kind="admin", summary=f"open {actor} conversation", scripted=scripted,
+                )
+                conv = _first_key(made, ("conversation_id", "id"))
+                if not conv:
+                    raise MekoError(f"conversation_create returned no id: {made!r}")
+                self._conversations[key] = conv
         return self._conversations[key]
 
     # --- datapacks -------------------------------------------------------
 
     async def datapack_id(self, name: str, *, actor: str = "system", create: bool = True) -> str:
-        """Resolve a datapack name to its id, creating it if missing."""
+        """Resolve a datapack name to its id, creating it if missing. Returns "" when Meko is off."""
+        if not self.enabled:
+            return ""
+        async with self._lock(name):
+            return await self._resolve(name, actor, create)
+
+    async def _resolve(self, name: str, actor: str, create: bool) -> str:
         if name in self._datapack_ids:
             return self._datapack_ids[name]
         found = await self.call(

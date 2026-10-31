@@ -29,7 +29,10 @@ class Reply:
 class LLM:
     def __init__(self, settings: Settings):
         self.model = settings.llm_model
-        self.client = AsyncOpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key)
+        # No retries and a hard timeout: agents fall back to a deterministic path instead of stalling the demo.
+        self.client = AsyncOpenAI(
+            base_url=settings.llm_base_url, api_key=settings.llm_api_key, timeout=90.0, max_retries=0
+        )
 
     async def chat(
         self,
