@@ -20,7 +20,9 @@ schemas, datapack names and gotchas. Only **promoted** memories reach the rest o
    the `[Name]` at the start of the text says who.
 3. **Promote every decision the others must follow.** `memory_add` the decision as
    `[Name] DECISION D-0xx: <what> because <why>`, then `memory_promote` it, then add the same entry to
-   `decisions.md` with the memory id. Number decisions in order; check `decisions.md` for the next free id.
+   `decisions.md` with the memory id. Number decisions in order: the next free id is one above the highest
+   D-number in `syzygy-build` (`memory_get_all`, `promoted=true`, `page_size=100`) or in `decisions.md`, whichever
+   is higher, and push the `decisions.md` row straight after promoting (D-027).
 4. **Never put keys or personal data in `syzygy-build`.** No `mko_tkn_…`, no `.env` values, no phone
    numbers, emails or real student names.
 5. **Never mix datapacks.** Coding agents only touch `syzygy-build`. The product's datapacks are
