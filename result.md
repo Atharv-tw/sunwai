@@ -7,7 +7,7 @@ Only numbers we measured. Each table says the machine, the date and the command 
 | Name | CPU / RAM | GPU | Role |
 |---|---|---|---|
 | dev (Atharv) | 12 threads / 6.6 GB | GTX 1650, 4 GB | building, `qwen3:4b` |
-| demo | ? / 16 GB | RTX 4060 Laptop, 8 GB | demo, `qwen3:8b` |
+| demo (Alok) | i7-14650HX, 24 threads / 15.7 GB | RTX 4060 Laptop, 8 GB | demo, `qwen3:8b` |
 
 ## Meko call latency
 
@@ -30,6 +30,18 @@ Logged by `sunwai/meko.py` across two smoke runs, dev laptop, 31 Oct 2026 ~20:00
 | 3 × memory_search in parallel (wall clock) | 1 | 9400 | 9400 |
 
 Takeaway: every call costs ~2 s; anything that searches memory costs ~9 s, and parallel searches cost the same as one.
+
+Demo laptop, one smoke run (`data/smoke_meko.json`), 1 Nov 2026, home Wi-Fi (slow that night: PyPI downloads stalled):
+
+| Tool | n | p50 ms | max ms |
+|---|---|---|---|
+| datapack_list | 5 | 1878 | 2501 |
+| memory_search | 5 | 9932 | 10432 |
+| context_search (all sources) | 5 | 10767 | 11157 |
+| memory_get_all | 5 | 1351 | 1644 |
+| memory_promote | 1 | 1311 | 1311 |
+
+Write → searchable lag 10.8 s (one search's latency); promoted memory visible in `memory_get_all`. Same shape as dev.
 
 ## Meko behaviour
 
@@ -78,7 +90,11 @@ Takeaway: `knowledgebase_search` (canon) answers in ~1.4 s; `memory_search` cost
 |---|---|---|---|---|---|
 | qwen3:4b-instruct (Q4_K_M) | dev | 10 | 9 | 3.09 (max 5.80); rerun with `think: false`: 3.14 (max 3.52) | 23.7 |
 | qwen3:4b (Q4_K_M, thinking build) | dev | not completed | not completed | 87.4 for one call | ~13 |
-| qwen3:8b | demo | | | | |
+| qwen3:8b (hybrid, 40960 ctx) | demo | 10 | 9 | 6.70 (max 11.67) | 45.8 |
+
+1 Nov, Ollama 0.40.13, RTX 4060 Laptop: 100% GPU, 5.5 GB of 8 GB VRAM at 4096 context; first load 86 s (cold).
+Same one miss as dev: "corridor light … someone fell" → `hostel_electrical`. p50 is under the 4060.md 10 s bar, so
+the demo stays on `qwen3:8b`; `qwen3:4b-instruct` is pulled as the fallback.
 
 31 Oct ~21:00 IST, Ollama 0.40.13, GTX 1650 (model split 23% CPU / 77% GPU at 4096 context). The one miss:
 "corridor light … someone fell" came back `hostel_electrical`, we expected `safety`.
