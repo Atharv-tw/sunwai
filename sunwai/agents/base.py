@@ -2,34 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
 import re
 from dataclasses import dataclass
 
 from sunwai.config import Settings
 from sunwai.llm import LLM
 from sunwai.meko import Meko
-
-try:  # Arun's module (TASKS.md R1); the fallback below only covers the basics until it lands
-    from sunwai.privacy import pseudonym, scrub
-except ImportError:
-    _PII = [
-        ("email", re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")),
-        ("phone", re.compile(r"(?:\+91[\s-]?)?\b[6-9]\d{9}\b")),
-        ("roll", re.compile(r"\b(?:\d{2}[A-Z]{2,4}\d{2,4}|2K\d{2}/[A-Z]{2,4}/\d{2,4})\b", re.I)),
-        ("name", re.compile(r"(?<=\bmy name is )[A-Z][a-z]+(?: [A-Z][a-z]+)?", re.I)),
-    ]
-
-    def scrub(text: str) -> tuple[str, list[str]]:
-        removed = []
-        for kind, rx in _PII:
-            text, n = rx.subn(f"[{kind}]", text)
-            if n:
-                removed.append(kind)
-        return text, removed
-
-    def pseudonym(seed: str) -> str:
-        return "S-" + hashlib.sha256(seed.encode()).hexdigest()[:4]
+from sunwai.privacy import pseudonym, scrub  # noqa: F401  (pseudonym is re-exported for the orchestrator)
 
 
 def clean(text: str) -> str:
