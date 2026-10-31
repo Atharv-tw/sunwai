@@ -1,0 +1,180 @@
+/* Shared look for the role screens (index, student, staff). Plain CSS, no build step. */
+:root {
+  --bg: #f6f5f2;
+  --panel: #ffffff;
+  --ink: #1d1d1f;
+  --muted: #6b6b70;
+  --line: #e2e0da;
+  --accent: #2f5bd3;
+  --accent-ink: #ffffff;
+  --ok: #1f8a4c;
+  --warn: #b26a00;
+  --bad: #c0352b;
+  --promote: #9a6b00;
+  --chip: #efede8;
+  --scripted: #6d4fc2;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 2px 8px rgba(0, 0, 0, .04);
+  --radius: 10px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141416;
+    --panel: #1d1d20;
+    --ink: #ececef;
+    --muted: #9b9ba3;
+    --line: #2e2e33;
+    --accent: #7c9cff;
+    --accent-ink: #0d0d10;
+    --ok: #4cc283;
+    --warn: #e0a23a;
+    --bad: #ff6b5e;
+    --promote: #e8c35a;
+    --chip: #2a2a2f;
+    --scripted: #b39cff;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+h1, h2, h3 { margin: 0; line-height: 1.2; }
+h1 { font-size: 20px; }
+h2 { font-size: 17px; }
+h3 { font-size: 15px; }
+
+/* top bar */
+.bar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 5;
+}
+.bar .brand { font-weight: 700; text-decoration: none; color: var(--ink); font-size: 18px; }
+.bar .brand small { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: 6px; }
+.bar nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.bar nav a {
+  text-decoration: none; color: var(--muted); padding: 5px 10px; border-radius: 999px; font-size: 14px;
+}
+.bar nav a.on { background: var(--chip); color: var(--ink); font-weight: 600; }
+.bar .spacer { flex: 1; }
+
+.meko {
+  font: 700 12px/1 var(--mono); letter-spacing: .06em; padding: 6px 10px; border-radius: 6px;
+  border: 1.5px solid currentColor; white-space: nowrap;
+}
+.meko.on { color: var(--ok); }
+.meko.off { color: var(--bad); }
+
+main { max-width: 1240px; margin: 0 auto; padding: 18px 20px 60px; }
+.cols { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 18px; align-items: start; }
+@media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px;
+}
+.panel + .panel { margin-top: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.stack > * + * { margin-top: 10px; }
+
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+}
+textarea { resize: vertical; min-height: 84px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+button {
+  font: 600 14px/1 system-ui, sans-serif; border-radius: 8px; padding: 9px 14px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--chip); color: var(--ink);
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+button.good { background: var(--ok); border-color: var(--ok); color: #fff; }
+button.bad { background: transparent; border-color: var(--bad); color: var(--bad); }
+button:disabled { opacity: .5; cursor: default; }
+
+/* incident card */
+.inc { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow); }
+.inc + .inc { margin-top: 12px; }
+.inc .head { padding: 12px 14px 8px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.inc .id { font: 700 13px var(--mono); }
+.inc .summary { font-weight: 600; flex: 1 1 320px; }
+.inc .body { padding: 0 14px 12px; }
+.inc .facts { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); margin-bottom: 8px; }
+.inc .facts b { color: var(--ink); font-weight: 600; }
+.inc .acts { padding: 10px 14px; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.inc .acts input { flex: 1 1 260px; width: auto; }
+.inc .err { color: var(--bad); font-size: 13px; width: 100%; }
+
+.chip {
+  display: inline-block; font: 600 12px/1 system-ui, sans-serif; padding: 4px 8px; border-radius: 999px;
+  background: var(--chip); color: var(--ink); white-space: nowrap;
+}
+.st-reported { background: #e6e4de; color: #4a4a4f; }
+.st-assigned { background: #fbe9c6; color: #7a4a00; }
+.st-in_progress { background: #d9e4ff; color: #22408f; }
+.st-fixed { background: #cdeee9; color: #0f5e54; }
+.st-verified { background: #d3f0dc; color: #1a6a3c; }
+.st-lesson_pending { background: #eadfff; color: #4f2fa0; }
+.st-closed { background: #dedede; color: #333; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .chip[class*="st-"] { filter: saturate(.9) brightness(.85); }
+}
+.chip.risk { background: var(--bad); color: #fff; }
+.chip.scripted { background: transparent; border: 1px solid var(--scripted); color: var(--scripted); font-size: 10.5px; letter-spacing: .05em; }
+
+.plan { background: var(--bg); border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 0 6px 6px 0; margin: 6px 0 8px; }
+.why { font-size: 13.5px; }
+
+/* context cards: only what Meko returned, each with its memory id (D-011) */
+.cards { display: grid; gap: 6px; margin-top: 8px; }
+.card { border: 1px dashed var(--line); border-radius: 8px; padding: 7px 10px; font-size: 13.5px; }
+.card .src { font: 11.5px var(--mono); color: var(--muted); display: block; margin-bottom: 2px; }
+.card.lesson { border-style: solid; border-color: var(--promote); }
+
+.lessonbox { border: 1px solid var(--scripted); border-radius: 8px; padding: 8px 10px; margin-top: 8px; font-size: 13.5px; }
+.lessonbox.promoted { border-color: var(--promote); }
+
+details.tl { margin-top: 8px; }
+details.tl summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.tl ol { list-style: none; margin: 6px 0 0; padding: 0; font-size: 13px; }
+.tl li { padding: 3px 0; border-bottom: 1px dotted var(--line); display: flex; gap: 8px; }
+.tl li time { font-family: var(--mono); color: var(--muted); font-size: 12px; flex: none; }
+.tl li .who { font-weight: 600; flex: none; }
+
+.working { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 13px; }
+.working::before {
+  content: ""; width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty { color: var(--muted); text-align: center; padding: 30px 10px; }
+.note { font-size: 13px; color: var(--muted); }
+.toast { margin-top: 8px; font-size: 13.5px; }
+.toast.err { color: var(--bad); }
+.toast.ok { color: var(--ok); }
+
+/* role switcher */
+.roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+.role {
+  display: block; text-decoration: none; color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+}
+.role:hover { border-color: var(--accent); }
+.role b { display: block; font-size: 16px; margin-bottom: 4px; }
+.role span { color: var(--muted); font-size: 13.5px; }
+.role.swarm { border-color: var(--accent); }

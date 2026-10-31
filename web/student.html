@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunwai · Student</title>
+  <link rel="stylesheet" href="common.css">
+</head>
+<body>
+  <main class="cols">
+    <section>
+      <div class="panel stack">
+        <div>
+          <label for="who">You are</label>
+          <select id="who"></select>
+          <div class="note" id="sid"></div>
+        </div>
+      </div>
+      <form class="panel stack" id="complain">
+        <h2>Tell us what's wrong</h2>
+        <div>
+          <label for="text">In your own words: any language, typos are fine. Say where.</label>
+          <textarea id="text" required placeholder="e.g. Hostel B 3rd floor geyser not giving hot water since morning"></textarea>
+        </div>
+        <div class="row">
+          <button class="primary" type="submit" id="send">Send</button>
+          <span class="working" id="sending" hidden>Desk is reading it…</span>
+        </div>
+        <div class="note">Phone numbers, emails, roll numbers and names are removed before anything is stored. You appear as a
+          pseudonymous id (S-xxxx).</div>
+        <div class="toast" id="sent"></div>
+      </form>
+    </section>
+    <section>
+      <div class="row" style="margin-bottom:10px">
+        <h2>Your complaints</h2>
+        <span class="muted small">updates every 2 s</span>
+      </div>
+      <div id="list"></div>
+    </section>
+  </main>
+  <script src="common.js"></script>
+  <script src="student.js"></script>
+</body>
+</html>
