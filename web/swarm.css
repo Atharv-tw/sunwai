@@ -36,11 +36,11 @@ button.on { background: #1d2a52; border-color: var(--read); }
 .ctr.err b { color: var(--error); }
 .legend { margin-left: auto; color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 6px; }
 .legend i { display: inline-block; width: 18px; height: 0; border-top: 3px solid; margin-left: 8px; }
-.k-write { border-color: var(--write); }
-.k-read { border-color: var(--read); border-top-style: dashed !important; }
-.k-share { border-color: var(--share); }
-.k-promote { border-color: var(--promote); border-top-width: 5px !important; }
-.k-approval { border-color: var(--approval); }
+.legend .k-write { border-color: var(--write); }
+.legend .k-read { border-color: var(--read); border-top-style: dashed !important; }
+.legend .k-share { border-color: var(--share); }
+.legend .k-promote { border-color: var(--promote); border-top-width: 5px !important; }
+.legend .k-approval { border-color: var(--approval); }
 
 main { display: grid; grid-template-columns: 1fr 400px; min-height: 0; }
 #stage { min-width: 0; min-height: 0; padding: 4px; }
