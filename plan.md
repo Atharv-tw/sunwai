@@ -80,17 +80,17 @@ sunwai/server.py (FastAPI)
 |---|---|---|
 | 31 Oct 21:00 | Setup: repo public, docs, Meko connected, local model running, smoke numbers, decisions promoted | done (model: `qwen3:4b-instruct`, D-025) |
 | 1 Nov 01:00 | Vertical slice: geyser case end to end through Meko, call wrapper + log | done 31 Oct 20:31 (`scripts/slice_geyser.py`) |
-| 1 Nov 04:00 | Swarm view live (graph, counters, stream, window/replay) | |
-| 1 Nov 07:00 | Breadth: Wi-Fi dedup, mess sickness escalation, power-cut ETA, Dean patterns, semester rollover, Meko on/off toggle | backend done; `history.json` and `live.json` done, full script rehearsed live 1 Nov 00:22 (D-031); still to do: reset + seed (D-032, needs Atharv's go-ahead), semester rollover |
-| 1 Nov 10:00 | DESIGN.md, FEATURE_PROPOSAL.md, README ≤5 commands, result.md numbers, 4060 dry run, demo script, LinkedIn post | role screens done (D-033); `FEATURE_PROPOSAL.md` drafted (attested promotion); demo script = `scenarios/live.json` |
+| 1 Nov 04:00 | Swarm view live (graph, counters, stream, window/replay) | done (Alok, merged 04f52f7); counters matched the call log in the 1 Nov 03:24 rehearsal |
+| 1 Nov 07:00 | Breadth: Wi-Fi dedup, mess sickness escalation, power-cut ETA, Dean patterns, semester rollover, Meko on/off toggle | backend done; `history.json` and `live.json` done, full script rehearsed live 1 Nov 00:22 (D-031); seeded 01:28, full rehearsal with swarm view 03:24 (result.md); still to do: semester rollover |
+| 1 Nov 10:00 | DESIGN.md, FEATURE_PROPOSAL.md, README ≤5 commands, result.md numbers, 4060 dry run, demo script, LinkedIn post | role screens done (D-033); DESIGN.md, FEATURE_PROPOSAL.md, README checked from a fresh clone; demo script `demo/DEMO_SCRIPT.md` + `scenarios/live.json` |
 | 1 Nov 12:00 | Buffer, submit | |
 
 ## Submission checklist
 
-- [ ] Public repo, README setup in ≤5 commands
+- [x] Public repo, README setup in ≤5 commands
 - [x] `DESIGN.md`: one page, who does what, where Meko is used and why
 - [ ] Demo ≤5 min with swarm view open
-- [ ] `FEATURE_PROPOSAL.md`: friction, feature, MCP interface with example call + response, scenario before/after, why new, risks
+- [x] `FEATURE_PROPOSAL.md`: friction, feature, MCP interface with example call + response, scenario before/after, why new, risks
 - [ ] Check T: `syzygy-build` has ≥10 promoted decisions from ≥2 teammates, each signed; judges invited as Viewers
 - [ ] Open model running locally on the demo laptop
 - [ ] LinkedIn post: short demo, what Meko does in it, mention Meko, YugabyteDB and hackCBS 9.0
