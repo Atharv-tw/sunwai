@@ -9,6 +9,7 @@ Step fields (TASKS.md R2 plus what staff steps need to name their incident):
   {at, actor_role, action, incident: "<ref or INC-id>", note?, student_seed?}
         action ∈ approve_plan | record_fix | confirm_fixed | still_broken | approve_lesson | reject_lesson
   {at, actor_role: "electricity", kind: "power_cut", place, until, note?}   -> a note into other departments
+        until: "HH:MM", ISO, or "+50m" (minutes from when the step runs, D-031)
 Steps with the same `at` are sent together (e.g. 40 Wi-Fi reports). Before an action the runner waits until
 the incident allows it, so slow Meko recalls never make a step fail.
 """
@@ -22,17 +23,20 @@ import os
 import re
 import sys
 import time
+from datetime import datetime, timedelta
 from itertools import groupby
 from pathlib import Path
 
 import httpx
 
 from sunwai import config
+from sunwai.store import IST
 
 BASE = os.getenv("SUNWAI_URL", "http://127.0.0.1:8765")
-READY = {  # status an incident must be in (with no agent step in flight) before each action
-    "approve_plan": "assigned", "record_fix": "in_progress", "confirm_fixed": "fixed",
-    "still_broken": "fixed", "approve_lesson": "lesson_pending", "reject_lesson": "lesson_pending",
+READY = {  # statuses an incident must be in (with no agent step in flight) before each action
+    "approve_plan": ("assigned",), "record_fix": ("in_progress",),
+    "confirm_fixed": ("fixed", "verified", "lesson_pending", "closed"),  # later students still confirm (counted)
+    "still_broken": ("fixed",), "approve_lesson": ("lesson_pending",), "reject_lesson": ("lesson_pending",),
 }
 T0 = time.perf_counter()
 
@@ -56,14 +60,14 @@ class Runner:
         ref = step.get("incident") or step.get("ref") or ""
         return self.refs.get(ref, ref)
 
-    async def wait(self, inc_id: str, status: str) -> dict:
+    async def wait(self, inc_id: str, statuses: tuple[str, ...]) -> dict:
         end = time.time() + self.timeout
         while True:
             inc = (await self.c.get(f"/api/incidents/{inc_id}")).raise_for_status().json()
-            if inc["status"] == status and not inc["working"]:
+            if inc["status"] in statuses and not inc["working"]:
                 return inc
             if time.time() > end:
-                raise RuntimeError(f"{inc_id} still {inc['status']} (working={inc['working']}), wanted {status}")
+                raise RuntimeError(f"{inc_id} still {inc['status']} (working={inc['working']}), wanted {'/'.join(statuses)}")
             await asyncio.sleep(1)
 
     async def step(self, s: dict) -> None:
@@ -80,10 +84,13 @@ class Runner:
                 raise RuntimeError(f"{s['action']} on {inc_id}: {r.status_code} {r.text}")
             say(f"{role} {s['action']} {inc_id}")
         elif s.get("kind") == "power_cut" or role == "electricity":
+            until = str(s["until"])
+            if m := re.fullmatch(r"\+(\d+)m", until.strip()):
+                until = (datetime.now(IST) + timedelta(minutes=int(m.group(1)))).strftime("%H:%M")
             body = {"actor_role": role, "kind": s.get("kind", "power_cut"), "place": s["place"],
-                    "until": s["until"], "note": s.get("note") or s.get("text"), "scripted": True}
+                    "until": until, "note": s.get("note") or s.get("text"), "scripted": True}
             out = (await self.c.post("/api/dept-events", json=body)).raise_for_status().json()
-            say(f"{role}: power cut at {s['place']} until {s['until']} -> notes in {out['notes_written']}")
+            say(f"{role}: power cut at {s['place']} until {until} -> notes in {out['notes_written']}")
         else:
             body = {"student_seed": s.get("student_seed") or f"scenario-{id(s)}", "text": s["text"], "scripted": True}
             inc = (await self.c.post("/api/grievances", json=body)).raise_for_status().json()

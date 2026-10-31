@@ -21,7 +21,7 @@ Who builds what until 1 Nov 12:00. Finish [TEAM_SETUP.md](TEAM_SETUP.md) first.
 
 | Owner | Files |
 |---|---|
-| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator,incident_api}.py`, `sunwai/agents/*`, `scripts/smoke_*`, `scripts/slice_*`; from Arun (D-029): `sunwai/privacy.py`, `tests/test_privacy.py`, `scenarios/*`, `web/index.html`, `web/student.*`, `web/staff.*`, `web/common.css`, `FEATURE_PROPOSAL.md` |
+| Atharv | `sunwai/{config,meko,calllog,llm,server,store,orchestrator,incident_api}.py`, `sunwai/agents/*`, `scripts/smoke_*`, `scripts/slice_*`; from Arun (D-029): `sunwai/privacy.py`, `tests/test_privacy.py`, `scenarios/*`, `web/index.html`, `web/student.*`, `web/staff.*`, `web/common.{css,js}`, `FEATURE_PROPOSAL.md`, `scripts/{seed_history,reset_product,run_scenario}.py` |
 | Alok | `sunwai/swarm_api.py`, `web/swarm.html`, `web/swarm.js`, `web/swarm.css`, `scripts/fake_calls.py` |
 
 ---
@@ -75,6 +75,7 @@ JSON only, no code. This is our modelled campus; label everything scripted.
 - `campus.json`: places (Hostel A, Hostel B with floors, Mess, Library, Block C), people roles (student, caretaker, warden, mess committee, IT cell, electricity staff, dean) with display names that are clearly fake.
 - `history.json`: seeded past cases written as the department would remember them (e.g. last winter's geyser trip and its root cause, RO filter replacements every ~40 days, a router that failed twice). 10–15 items, each `{dept, place, date, text}`.
 - `live.json`: the demo script, in order: geyser complaint in Hostel A → fix → students confirm → warden approves lesson; power cut recorded by electricity staff; 40 Wi-Fi complaints in different wording (Hinglish, typos, angry, polite); 5 mess sickness reports after Tuesday dinner; geyser complaint in Hostel B (the case that must benefit). Each step `{at: "+0m", actor_role, student_seed?, text}`; staff/student actions and power cuts use the extra fields in D-028. Play it with `uv run python scripts/run_scenario.py`.
+- Done 1 Nov (D-031): rehearsed live, 49 reports → 4 incidents. Before the demo: `scripts/reset_product.py --yes` then `scripts/seed_history.py` (D-032, `4060.md` §5b).
 
 ### R3. Student + staff screens (`web/index.html`, `web/student.*`, `web/staff.*`): by 03:00
 Plain HTML/JS, no build step. Build against the **Incident API** contract below; until Atharv's endpoints land,

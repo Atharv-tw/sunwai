@@ -86,6 +86,20 @@ Takeaway: `knowledgebase_search` (canon) answers in ~1.4 s; `memory_search` cost
 call generated 1165 tokens and took 87.4 s; with `think: false` it still reasoned, in `content` (2288 tokens,
 181.6 s), and the smoke run hit the 90 s client timeout. Hence D-025: `qwen3:4b-instruct`.
 
+## Demo script rehearsal (`scenarios/live.json`)
+
+`scripts/run_scenario.py --speed 0`, 1 Nov 2026, GTX 1650 dev laptop, qwen3:4b-instruct (`LLM_PARALLEL=2`), scratch DB
+per side. The product datapacks still held earlier test data and were **not** seeded with `history.json`, so Hostel A
+and Wi-Fi had no past fix to recall; the rehearsal checks the script and the flow, not the seeded plans.
+
+| Measure | Meko on (00:22–00:27 IST) | Meko off (run just before) |
+|---|---|---|
+| Incidents from 57 steps (49 student reports, 7 staff/student actions, 1 power cut) | 4: geyser Hostel A 3→1, Wi-Fi 40→1, mess 5→1 (escalated as food safety), geyser Hostel B | 49 (one per report) |
+| Runner wall time | 245.0 s | 162.5 s |
+| Meko calls (admin excluded) | 47, 0 errors: 27 read, 7 write, 6 share, 6 approval, 1 promote | 0 |
+| Power cut at Hostel A | written into `sunwai-hostel` and `sunwai-it`; INC-0001's ETA moved behind it, citing the note's memory id | nothing written, ETA unchanged |
+| Hostel B geyser plan | "Verified fix from INC-0001: Reset the breaker and set thermostat to 55C", ETA 40 min, cites the canon lesson promoted 1 min earlier in the same run | "Inspect the geyser at Hostel B, floor 3. No past fix on record.", default for high severity |
+
 ## Meko on vs off (product)
 
 Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct 21:10–21:16 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).

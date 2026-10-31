@@ -1,0 +1,35 @@
+{
+  "scripted": true,
+  "note": "The modelled campus for the demo (SCRIPTED). Every name here is fake; no real student or staff data.",
+  "places": [
+    {"name": "Hostel A", "kind": "hostel", "floors": 4, "dept": "hostel", "has": ["geyser", "fan", "light", "tap", "shower", "router"]},
+    {"name": "Hostel B", "kind": "hostel", "floors": 4, "dept": "hostel", "has": ["geyser", "fan", "light", "tap", "shower", "router"]},
+    {"name": "Mess", "kind": "mess", "dept": "mess", "has": ["food", "ro_water"]},
+    {"name": "Library", "kind": "academic", "dept": "it", "has": ["router", "light"]},
+    {"name": "Block C", "kind": "academic", "floors": 3, "dept": "it", "has": ["router", "light", "fan"]}
+  ],
+  "departments": [
+    {"id": "hostel", "label": "Hostel maintenance", "datapack": "sunwai-hostel", "staff": "caretaker", "approver": "warden",
+     "handles": ["hostel_electrical", "hostel_plumbing", "safety"]},
+    {"id": "mess", "label": "Mess", "datapack": "sunwai-mess", "staff": "mess_committee", "approver": "mess_committee",
+     "handles": ["mess_food"]},
+    {"id": "it", "label": "IT cell", "datapack": "sunwai-it", "staff": "it_cell", "approver": "it_cell",
+     "handles": ["wifi_network"]}
+  ],
+  "people": [
+    {"role": "caretaker", "dept": "hostel", "display_name": "Caretaker Tinku (fake)", "does": "approves plans, records fixes"},
+    {"role": "warden", "dept": "hostel", "display_name": "Warden Example (fake)", "does": "approves plans, approves lessons for canon"},
+    {"role": "mess_committee", "dept": "mess", "display_name": "Mess Committee Demo (fake)", "does": "approves plans, records fixes, approves lessons"},
+    {"role": "it_cell", "dept": "it", "display_name": "IT Cell Ping (fake)", "does": "approves plans, records fixes, approves lessons"},
+    {"role": "electricity", "display_name": "Lineman Volt (fake)", "does": "records power cuts, written into other departments' memory"},
+    {"role": "dean", "display_name": "Dean Placeholder (fake)", "does": "reads verified patterns from canon only"}
+  ],
+  "students": [
+    {"seed": "demo-hostel-a-204", "display_name": "Student A-204 (fake)", "lives": "Hostel A, floor 2, room 204"},
+    {"seed": "demo-hostel-a-207", "display_name": "Student A-207 (fake)", "lives": "Hostel A, floor 2, room 207"},
+    {"seed": "demo-hostel-a-212", "display_name": "Student A-212 (fake)", "lives": "Hostel A, floor 2, room 212"},
+    {"seed": "demo-hostel-b-311", "display_name": "Student B-311 (fake)", "lives": "Hostel B, floor 3, room 311"},
+    {"seed": "demo-block-c-01", "display_name": "Student C-01 (fake)", "lives": "Hostel B, studies in Block C"},
+    {"seed": "demo-mess-01", "display_name": "Student M-01 (fake)", "lives": "Hostel A, eats at the Mess"}
+  ]
+}

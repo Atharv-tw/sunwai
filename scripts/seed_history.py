@@ -35,7 +35,12 @@ def notes(item: dict) -> tuple[str, str | None]:
     fix = f"FIX ({dept}, {asset}) at {place} on {day}: {text}." + (f" Took {took.group(1)} min." if took else "")
     lesson = None
     if item.get("verified"):
-        parts = [f"LESSON ({dept}, {asset}) from history {day} at {place}", f"fix: {text}"]
+        # history text reads "symptom; root cause. What fixed it" (D-031)
+        problem, _, fix_part = text.partition(". ")
+        parts = [f"LESSON ({dept}, {asset}) from history {day} at {place}"]
+        if fix_part:
+            parts.append(f"root cause: {problem.split('; ', 1)[-1]}")
+        parts.append(f"fix: {fix_part or text}")
         if took:
             parts.append(f"takes about {took.group(1)} min")
         parts.append("verified before Sunwai (seeded history, SCRIPTED)")
