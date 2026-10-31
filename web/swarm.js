@@ -157,7 +157,9 @@
 
   function renderStream(list) {
     const rows = list.slice(-STREAM_MAX).reverse();   // newest first
-    $("#stream").innerHTML = rows.map((c) => `<li class="${liClass(c)}">${rowHtml(c)}</li>`).join("");
+    $("#stream").innerHTML = rows.length
+      ? rows.map((c) => `<li class="${liClass(c)}">${rowHtml(c)}</li>`).join("")
+      : '<li class="empty">No Meko calls in this window.</li>';
     $("#stream-n").textContent = `(${list.length})`;
   }
 
@@ -234,6 +236,8 @@
       const h = await (await fetch("/api/health")).json();
       b.textContent = h.meko_enabled ? "MEKO ON" : "MEKO OFF";
       b.className = "badge " + (h.meko_enabled ? "on" : "off");
+      document.body.classList.toggle("meko-off", !h.meko_enabled);
+      $("#off-note").hidden = h.meko_enabled;
     } catch {
       b.textContent = "MEKO ?"; b.className = "badge unknown";
     }

@@ -89,3 +89,15 @@ li.bad .sum { color: #ffb4b4 !important; }
 .edge.admin { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 5; }
 .edge.err { stroke: var(--error); }
 .dot { fill: #fff; }
+
+/* Meko off: the view should look visibly empty */
+#stage { position: relative; }
+#off-note { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; text-align: center; pointer-events: none; color: #ffb4b4; }
+#off-note[hidden] { display: none; }
+#off-note b { font-size: 54px; letter-spacing: .08em; color: var(--error); text-shadow: 0 0 24px #ff5d5d66; }
+#off-note span { font-size: 18px; color: #d9a0a0; }
+body.meko-off #graph { opacity: .22; filter: grayscale(1); }
+body.meko-off .badge { font-size: 20px; padding: 6px 18px; animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 50% { box-shadow: 0 0 0 4px #ff5d5d55; } }
+#stream li.empty { color: var(--muted); border-left-color: transparent; }
