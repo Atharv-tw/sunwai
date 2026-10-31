@@ -29,6 +29,7 @@ class Reply:
 class LLM:
     def __init__(self, settings: Settings):
         self.model = settings.llm_model
+        self.ollama = ":11434" in settings.llm_base_url or settings.llm_api_key == "ollama"
         # No retries and a hard timeout: agents fall back to a deterministic path instead of stalling the demo.
         self.client = AsyncOpenAI(
             base_url=settings.llm_base_url, api_key=settings.llm_api_key, timeout=90.0, max_retries=0
@@ -44,8 +45,10 @@ class LLM:
         temperature: float = 0.2,
         think: bool = False,
     ) -> Reply:
-        # Qwen3 soft switch: skip the thinking block for short, structured jobs.
-        if not think:
+        # Skip the thinking block for short, structured jobs: Ollama takes an explicit `think` flag (it ignores
+        # the Qwen3 "/no_think" soft switch on thinking-only builds); other servers get the soft switch.
+        extra = {"think": think} if self.ollama else None
+        if not think and not self.ollama:
             user = f"{user}\n/no_think"
         start = time.perf_counter()
         resp = await self.client.chat.completions.create(
@@ -54,6 +57,7 @@ class LLM:
             tools=tools,
             tool_choice=tool_choice if tools else None,
             temperature=temperature,
+            extra_body=extra,
         )
         seconds = time.perf_counter() - start
         msg = resp.choices[0].message

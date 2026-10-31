@@ -76,8 +76,15 @@ Takeaway: `knowledgebase_search` (canon) answers in ~1.4 s; `memory_search` cost
 
 | Model | Machine | Valid tool calls / 10 | Correct category / 10 | p50 latency s | tok/s |
 |---|---|---|---|---|---|
-| qwen3:4b | dev | | | | |
+| qwen3:4b-instruct (Q4_K_M) | dev | 10 | 9 | 3.09 (max 5.80); rerun with `think: false`: 3.14 (max 3.52) | 23.7 |
+| qwen3:4b (Q4_K_M, thinking build) | dev | not completed | not completed | 87.4 for one call | ~13 |
 | qwen3:8b | demo | | | | |
+
+31 Oct ~21:10 IST, Ollama 0.40.13, GTX 1650 (model split 23% CPU / 77% GPU at 4096 context). The one miss:
+"corridor light … someone fell" came back `hostel_electrical`, we expected `safety`.
+`qwen3:4b` on Ollama is now the Qwen3-4B-Thinking-2507 build (256K context, thinking on by default): one triage
+call generated 1165 tokens and took 87.4 s; with `think: false` it still reasoned, in `content` (2288 tokens,
+181.6 s), and the smoke run hit the 90 s client timeout. Hence D-020: `qwen3:4b-instruct`.
 
 ## Meko on vs off (product)
 

@@ -39,7 +39,7 @@ def load() -> Settings:
         meko_enabled=os.getenv("MEKO_ENABLED", "on").lower() in ("on", "1", "true", "yes"),
         datapack_prefix=os.getenv("MEKO_DATAPACK_PREFIX", "sunwai-"),
         llm_base_url=os.getenv("LLM_BASE_URL", "http://localhost:11434/v1"),
-        llm_model=os.getenv("LLM_MODEL", "qwen3:4b"),
+        llm_model=os.getenv("LLM_MODEL", "qwen3:4b-instruct"),
         llm_api_key=os.getenv("LLM_API_KEY", "ollama"),
         host=os.getenv("SUNWAI_HOST", "127.0.0.1"),
         port=int(os.getenv("SUNWAI_PORT", "8765")),
