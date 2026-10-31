@@ -75,7 +75,7 @@ Atharv's code calls `scrub()` before every Meko write.
 JSON only, no code. This is our modelled campus; label everything scripted.
 - `campus.json`: places (Hostel A, Hostel B with floors, Mess, Library, Block C), people roles (student, caretaker, warden, mess committee, IT cell, electricity staff, dean) with display names that are clearly fake.
 - `history.json`: seeded past cases written as the department would remember them (e.g. last winter's geyser trip and its root cause, RO filter replacements every ~40 days, a router that failed twice). 10–15 items, each `{dept, place, date, text}`.
-- `live.json`: the demo script, in order: geyser complaint in Hostel A → fix → students confirm → warden approves lesson; power cut recorded by electricity staff; 40 Wi-Fi complaints in different wording (Hinglish, typos, angry, polite); 5 mess sickness reports after Tuesday dinner; geyser complaint in Hostel B (the case that must benefit). Each step `{at: "+0m", actor_role, student_seed?, text}`.
+- `live.json`: the demo script, in order: geyser complaint in Hostel A → fix → students confirm → warden approves lesson; power cut recorded by electricity staff; 40 Wi-Fi complaints in different wording (Hinglish, typos, angry, polite); 5 mess sickness reports after Tuesday dinner; geyser complaint in Hostel B (the case that must benefit). Each step `{at: "+0m", actor_role, student_seed?, text}`; staff/student actions and power cuts use the extra fields in D-028. Play it with `uv run python scripts/run_scenario.py`.
 
 ### R3. Student + staff screens (`web/index.html`, `web/student.*`, `web/staff.*`): by 03:00
 Plain HTML/JS, no build step. Build against the **Incident API** contract below; until Atharv's endpoints land,
