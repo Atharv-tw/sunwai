@@ -220,6 +220,8 @@ body.meko-off .dpk { opacity: .45; }
 .feed .kp { font: 700 9.5px var(--sans); letter-spacing: .06em; text-transform: uppercase; padding: 3px 6px; border-radius: 5px; color: var(--kc); background: color-mix(in srgb, var(--kc) 12%, transparent); }
 .feed .tag { font: 700 9px var(--sans); letter-spacing: .07em; padding: 2px 5px; border-radius: 5px; border: 1px dashed var(--scripted); color: var(--scripted); }
 .feed .tag.e { border: 0; background: var(--k-error); color: #fff; }
+.feed li > div { min-width: 0; }
+.feed .l1 .who, .feed .l1 .to { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .feed .l2 { font-size: 12.5px; color: var(--ink-2); line-height: 1.4; margin-top: 2px; word-break: break-word; }
 .feed .l3 { font: 500 10.5px var(--mono); color: var(--faint); margin-top: 2px; }
 

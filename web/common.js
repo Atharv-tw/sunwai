@@ -109,7 +109,7 @@ function header(active) {
   bar.innerHTML = `
     <a class="brand" href="index.html"><span class="logo">${icon("network")}</span>
       <span><b>Sunwai</b><small>heard and remembered</small></span></a>
-    <nav>${links.map(([href, id, label, ic]) => `<a href="${href}" class="${id === active ? "on" : ""}">${icon(ic)}${label}</a>`).join("")}</nav>
+    <nav>${links.map(([href, id, label, ic]) => `<a href="${href}" class="${id === active ? "on" : ""}" title="${label}">${icon(ic)}<span>${label}</span></a>`).join("")}</nav>
     <span class="spacer"></span>
     <span class="meko" id="meko-badge" title="Is Meko memory switched on?">MEKO …</span>`;
   document.body.prepend(bar);

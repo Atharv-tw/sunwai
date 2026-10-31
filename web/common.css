@@ -85,6 +85,7 @@ svg.ic { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-wid
 .bar nav a:hover { background: var(--surface-2); color: var(--ink); }
 .bar nav a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .bar .spacer { flex: 1; }
+@media (max-width: 1180px) { .bar nav a span { display: none; } .bar nav a.on span { display: inline; } .bar .brand small { display: none; } }
 
 .meko {
   display: inline-flex; align-items: center; gap: 7px; font: 700 11.5px/1 var(--sans); letter-spacing: .06em;

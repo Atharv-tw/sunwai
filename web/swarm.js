@@ -126,7 +126,8 @@
     const path = el("path", { d: dpath, class: `edge ${c.kind}${c.ok ? "" : " err"}${animate ? " flow" : ""}` }, edgeLayer);
     const life = Math.max(0.3, EDGE_LIFE - age);
     path.style.opacity = animate ? "0.95" : String(Math.max(0.15, 1 - age / EDGE_LIFE));
-    if (animate) activity(c, a, d, dpath);
+    if (!animate) return;      // replay frame: edges stay until the slider moves (redrawEdgesAt clears them)
+    activity(c, a, d, dpath);
     setTimeout(() => { path.classList.remove("flow"); path.style.opacity = "0"; }, Math.max(0, (life - 1.2) * 1000));
     setTimeout(() => path.remove(), life * 1000);
   }
