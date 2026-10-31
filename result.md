@@ -100,6 +100,28 @@ and Wi-Fi had no past fix to recall; the rehearsal checks the script and the flo
 | Power cut at Hostel A | written into `sunwai-hostel` and `sunwai-it`; INC-0001's ETA moved behind it, citing the note's memory id | nothing written, ETA unchanged |
 | Hostel B geyser plan | "Verified fix from INC-0001: Reset the breaker and set thermostat to 55C", ETA 40 min, cites the canon lesson promoted 1 min earlier in the same run | "Inspect the geyser at Hostel B, floor 3. No past fix on record.", default for high severity |
 
+## Seeded demo state (`sunwai-*`, before the demo)
+
+Atharv ran `scripts/reset_product.py --yes` (01:22–01:26 IST, 1 Nov) and `scripts/seed_history.py` (01:28) on his
+laptop; checked read-only afterwards with `memory_get_all`, `knowledgebase_search` and the Dean's pattern code (its
+pattern-report write skipped).
+
+| Datapack | After reset + seed |
+|---|---|
+| `sunwai-desk`, `sunwai-dean` | 0 memories |
+| `sunwai-hostel` / `-mess` / `-it` | 4 / 5 / 3 memories: the 12 seeded past-fix notes |
+| `sunwai-canon` | 0 memories, **8 promoted**: the 6 seeded lessons + 2 test lessons the reset could not remove (Hostel A geyser, promoted 31 Oct 20:30 and 1 Nov 00:23 IST) |
+
+- Reset: `memory_delete_all` succeeded on all six datapacks (13 agent ids each). Promoted lessons could not be
+  deleted: `knowledgebase_delete_document` returned `NOT_FOUND` for the very `document_id` that `knowledgebase_search`
+  returns for them, and `memory_delete_by_id` on a promoted id failed with a server error (`Object of type UUID is not
+  JSON serializable`).
+- `knowledgebase_search` on canon finds all 6 seeded lessons: "RO water filter cartridge clogged" → the 4 RO lessons,
+  "Wi-Fi down router overheating Block C" → the 2 router lessons, each with its memory id.
+- Dean patterns: Mess RO water 4 verified fixes, about every 40 days, next expected around 2026-11-17; IT router 2,
+  about every 49 days, next around 2026-11-10; and a spurious "Hostel: geyser needed a verified fix 2 times" from the
+  2 leftover test lessons.
+
 ## Meko on vs off (product)
 
 Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct 21:10–21:16 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
