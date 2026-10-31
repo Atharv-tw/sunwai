@@ -8,42 +8,92 @@
 </head>
 <body>
   <main>
-    <div class="panel">
-      <h1>Pick who you are</h1>
-      <p class="muted small">No login: this is a modelled campus (Hostel A, Hostel B, Mess, Library, Block C) with fake people.
-        Simulated students and staff are badged <span class="chip scripted">SCRIPTED</span>; every step still calls Meko live.</p>
-      <div class="roles">
-        <a class="role" href="student.html"><b>Student</b><span>Complain in your own words, see the ETA and why, confirm the fix held.</span></a>
-        <a class="role" href="staff.html?role=caretaker"><b>Caretaker</b><span>Hostel queue: approve the agent's plan, record the fix.</span></a>
-        <a class="role" href="staff.html?role=warden"><b>Warden</b><span>Hostel queue: approve lessons before they become campus canon.</span></a>
-        <a class="role" href="staff.html?role=mess_committee"><b>Mess committee</b><span>Mess queue, food-safety escalations, lessons.</span></a>
-        <a class="role" href="staff.html?role=it_cell"><b>IT cell</b><span>Wi-Fi and network queue: one incident for many reports.</span></a>
-        <a class="role" href="staff.html?role=electricity"><b>Electricity</b><span>Record a power cut; it is written into other departments' memory.</span></a>
-        <a class="role" href="staff.html?role=dean"><b>Dean</b><span>Patterns from verified lessons only (campus canon).</span></a>
-        <a class="role swarm" href="swarm.html"><b>Swarm view</b><span>Every Meko call between agents, people and datapacks, live.</span></a>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">hackCBS 9.0 · Meko Track B</span>
+        <h1>Campus grievances,<br><em>heard and remembered.</em></h1>
+        <p>Students complain in their own words. Agents with Meko memory merge duplicates, recall past fixes and share
+          what other departments know; people approve every call that matters. A fix becomes campus knowledge only after
+          the students it affected confirm it held.</p>
+        <div class="cta">
+          <a class="go" href="swarm.html" id="go-swarm"></a>
+          <a class="alt" href="student.html" id="go-student"></a>
+        </div>
       </div>
-    </div>
+      <div>
+        <div class="pulsegrid" id="pulse">
+          <div class="k"><b class="num" data-k="all">–</b><span><i style="background:var(--accent)"></i>Meko calls</span></div>
+          <div class="k"><b class="num" data-k="read">–</b><span><i style="background:var(--k-read)"></i>recalls</span></div>
+          <div class="k"><b class="num" data-k="write">–</b><span><i style="background:var(--k-write)"></i>notes</span></div>
+          <div class="k"><b class="num" data-k="share">–</b><span><i style="background:var(--k-share)"></i>shared</span></div>
+          <div class="k"><b class="num" data-k="approval">–</b><span><i style="background:var(--k-approval)"></i>approvals</span></div>
+          <div class="k"><b class="num" data-k="promote">–</b><span><i style="background:var(--k-promote)"></i>lessons</span></div>
+        </div>
+        <p class="note" style="margin-top:10px">Counted from the Meko call log, last 30 min.</p>
+      </div>
+    </section>
 
-    <div class="panel">
-      <h2>Meko memory</h2>
-      <p class="muted small">Switch Meko off to run the same flows with no memory: duplicates are not merged, plans have no past
-        fixes, lessons are not saved. Switch it back on to compare (D-012).</p>
-      <div class="row">
-        <button id="meko-on" class="good">Meko on</button>
-        <button id="meko-off" class="bad">Meko off</button>
-        <span id="meko-msg" class="toast"></span>
+    <div class="section-title"><h2>Pick who you are</h2>
+      <span class="muted small">No login. A modelled campus with fake people; simulated steps are badged
+        <span class="chip scripted">SCRIPTED</span> but every step still calls Meko live.</span></div>
+    <div class="roles" id="roles"></div>
+
+    <div class="panel" style="margin-top:28px">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2>Meko memory</h2>
+          <p class="muted small" style="margin:4px 0 0;max-width:640px">Switch Meko off to run the same flows with no memory:
+            duplicates are not merged, plans have no past fixes, lessons are not saved. Switch it back on to compare (D-012).</p>
+        </div>
+        <div class="switch">
+          <button id="meko-on" class="good">Meko on</button>
+          <button id="meko-off" class="bad">Meko off</button>
+        </div>
       </div>
+      <div id="meko-msg" class="toast"></div>
     </div>
   </main>
   <script src="common.js"></script>
   <script>
     header("");
+    document.getElementById("go-swarm").innerHTML = `${icon("network")}Open the swarm view`;
+    document.getElementById("go-student").innerHTML = `${icon("user")}Raise a complaint`;
+
+    const ROLES = [
+      ["student.html", "student", "Student", "Complain in your own words, see the ETA and why, confirm the fix held.", "#6366f1"],
+      ["staff.html?role=caretaker", "caretaker", "Caretaker", "Hostel queue: approve the agent's plan, record the fix.", "#14b8a6"],
+      ["staff.html?role=warden", "warden", "Warden", "Approve lessons before they become campus canon.", "#0f766e"],
+      ["staff.html?role=mess_committee", "mess_committee", "Mess committee", "Mess queue, food-safety escalations, lessons.", "#ec4899"],
+      ["staff.html?role=it_cell", "it_cell", "IT cell", "Wi-Fi and network queue: one incident for many reports.", "#06b6d4"],
+      ["staff.html?role=electricity", "electricity", "Electricity", "Record a power cut; it is written into other departments' memory.", "#f59e0b"],
+      ["staff.html?role=dean", "dean", "Dean", "Patterns from verified lessons only (campus canon).", "#475569"],
+      ["swarm.html", "swarm", "Swarm view", "Every Meko call between agents, people and datapacks, live.", "#8b5cf6"],
+    ];
+    document.getElementById("roles").innerHTML = ROLES.map(([href, id, label, job, hue]) => `
+      <a class="role ${id === "swarm" ? "swarm" : ""}" href="${href}">
+        <span class="av" style="background:${hue}">${icon(ACTORS[id]?.icon || "network")}</span>
+        <span><b>${label}</b><span>${job}</span></span></a>`).join("");
+
+    // live counts from the Meko call log (the same log the swarm view draws)
+    async function pulse() {
+      const r = await api(`/api/calls?since=${Date.now() / 1000 - 1800}`);
+      if (!r.ok) return;
+      const n = { all: 0 };
+      for (const c of r.data) { if (c.kind === "admin") continue; n.all++; n[c.kind] = (n[c.kind] || 0) + 1; }
+      document.querySelectorAll("#pulse b").forEach(b => { b.textContent = n[b.dataset.k] || 0; });
+    }
+    pulse(); setInterval(pulse, 3000);
+
     const msg = document.getElementById("meko-msg");
+    const on = document.getElementById("meko-on"), off = document.getElementById("meko-off");
+    function mark(enabled) { on.classList.toggle("on", enabled); off.classList.toggle("on", !enabled); }
+    api("/api/health").then(h => h.ok && mark(h.data.meko_enabled));
     async function setMeko(enabled) {
       msg.className = "toast";
       msg.textContent = enabled ? "connecting to Meko…" : "switching off…";
       const r = await api("/api/meko", { enabled });
       if (r.ok && r.data.meko_enabled === enabled) {
+        mark(enabled);
         msg.className = "toast ok";
         msg.textContent = enabled ? "Meko is on." : "Meko is off: no memory calls.";
       } else {
@@ -51,8 +101,8 @@
         msg.textContent = r.ok ? (r.data.meko_error || "could not switch") : r.error;
       }
     }
-    document.getElementById("meko-on").onclick = () => setMeko(true);
-    document.getElementById("meko-off").onclick = () => setMeko(false);
+    on.onclick = () => setMeko(true);
+    off.onclick = () => setMeko(false);
   </script>
 </body>
 </html>

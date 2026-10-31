@@ -17,14 +17,13 @@ else main.innerHTML = `<div class="panel">Unknown role ${esc(role)}. <a href="in
 function queueView(dept) {
   const approver = APPROVER[dept];
   main.innerHTML = `
-    <div class="row" style="margin-bottom:12px">
-      <h1>${DEPT_LABEL[dept]} queue</h1>
-      <span class="muted">you are the ${esc(ROLE_LABEL[role])}</span>
+    <div class="pagehead">
+      <div><span class="eyebrow">You are the ${esc(ROLE_LABEL[role])}</span><h1>${DEPT_LABEL[dept]} queue</h1>
+        <div class="sub">Plans and ETAs come from what the ${DEPT_LABEL[dept]} agent recalled from Meko. Each context card shows
+          the datapack and memory id it came from.</div></div>
       <span class="spacer" style="flex:1"></span>
-      <label class="row small" style="margin:0"><input type="checkbox" id="all" style="width:auto"> show closed</label>
+      <label class="row small" style="margin:0;font-weight:500"><input type="checkbox" id="all"> show closed</label>
     </div>
-    <p class="note" style="margin-top:-4px">Plans and ETAs come from what the ${DEPT_LABEL[dept]} agent recalled from Meko.
-      Each context card shows the datapack and memory id it came from.</p>
     <div id="list"></div>`;
   const list = document.getElementById("list");
   const all = document.getElementById("all");
@@ -67,9 +66,10 @@ function queueView(dept) {
         ${inc.safety_risk ? `<span class="chip risk">safety</span>` : ""}
         ${inc.reporters > 1 ? `<span class="chip">${inc.reporters} reports merged</span>` : ""}
         ${scriptedChip(isScripted(inc))}
-        ${mineNow ? `<span class="chip st-assigned">needs you</span>` : ""}
+        ${mineNow ? `<span class="chip needs">needs you</span>` : ""}
       </div>
       <div class="body">
+        ${stepper(inc.status)}
         <div class="facts">
           <span><b>${esc(inc.place)}</b></span>
           <span>${esc(inc.asset || inc.category)}</span>
@@ -78,7 +78,7 @@ function queueView(dept) {
             ? `<span>held <b>${inc.confirmations.held}</b> · still broken <b>${inc.confirmations.broken}</b></span>` : ""}
         </div>
         ${inc.working ? `<div class="working">${esc(inc.working)}</div>` : ""}
-        ${inc.plan ? `<div class="plan"><span class="muted small">Agent's plan</span><br>${esc(inc.plan)}</div>` : ""}
+        ${inc.plan ? `<div class="plan"><span class="lbl">${icon(ACTORS[inc.dept]?.icon || "bot")}${esc(DEPT_LABEL[inc.dept] || "Agent")} agent proposes</span>${esc(inc.plan)}</div>` : ""}
         ${etaLine(inc)}
         ${inc.status === "reported" ? "" : contextCards(inc)}
         ${lessonBox(inc)}
@@ -127,6 +127,7 @@ function electricityView() {
   main.innerHTML = `
     <div class="cols">
       <form class="panel stack" id="cut">
+        <span class="eyebrow">You are Electricity</span>
         <h2>Record a power cut</h2>
         <p class="note">Written as a note into the Hostel and IT agents' datapacks (a <b>share</b> in the swarm view), so their
           open incidents in that building move their ETA and say why.</p>
@@ -179,8 +180,8 @@ function electricityView() {
 
 function deanView() {
   main.innerHTML = `
+    <div class="pagehead"><div><span class="eyebrow">You are the Dean</span><h1>Verified patterns</h1></div></div>
     <div class="panel">
-      <h1>Verified patterns</h1>
       <p class="note">The Dean reads only campus canon: lessons that students confirmed held and a warden or committee approved,
         promoted to <span class="mono">sunwai-canon</span>. No anecdotes, no unverified complaints. Each pattern cites its lessons'
         memory ids. Refreshes every 15 s (reading canon is a Meko call, cached for a minute).</p>
@@ -196,12 +197,13 @@ function deanView() {
     if (!r.ok) { pEl.innerHTML = `<div class="empty">${esc(r.error)}</div>`; return; }
     const { lessons, patterns } = r.data;
     pEl.innerHTML = patterns.length ? patterns.map(p => `
-      <div class="card lesson"><b>${esc(p.text)}</b>
-        <span class="src">from lessons ${p.memory_ids.map(esc).join(", ")}</span></div>`).join("")
+      <div class="pattern"><span class="badge">${icon("sparkles")}</span>
+        <div><b>${esc(p.text)}</b><span class="dots">${p.memory_ids.map(() => "<i></i>").join("")}</span>
+        <span class="src">from ${p.memory_ids.length} verified lessons: ${p.memory_ids.map(esc).join(", ")}</span></div></div>`).join("")
       : `<div class="empty">No pattern yet: a pattern needs at least two verified lessons about the same thing.</div>`;
     lEl.innerHTML = lessons.length ? `<div class="cards">${lessons.map(l => {
       const day = (l.text.match(/\d{4}-\d\d-\d\d/) || [String(l.promoted_at || "").slice(0, 10)])[0];
-      return `<div class="card"><span class="src">${esc(day)} · ${esc(l.dept)} · ${esc(l.asset)} · memory ${esc(l.memory_id)}</span>
+      return `<div class="card lesson"><span class="src"><span class="dp">${icon("db")}sunwai-canon</span><span>${esc(day)} · ${esc(l.dept)} · ${esc(l.asset)}</span><span>memory ${esc(l.memory_id)}</span></span>
         ${esc(l.text)} ${l.text.includes("SCRIPTED") ? scriptedChip(true) : ""}</div>`;
     }).join("")}</div>`
       : `<div class="empty">Canon is empty${document.getElementById("meko-badge").textContent === "MEKO OFF" ? " (Meko is off)" : ""}.</div>`;

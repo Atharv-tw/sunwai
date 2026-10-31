@@ -60,6 +60,7 @@ function card(inc, openTl) {
       ${inc.safety_risk ? `<span class="chip risk">safety</span>` : ""}
     </div>
     <div class="body">
+      ${stepper(inc.status)}
       <div class="facts">
         <span><b>${esc(inc.place)}</b></span>
         <span>${others > 0 ? `<b>${others}</b> other student${others === 1 ? "" : "s"} reported the same thing` : "only you so far"}</span>
@@ -67,7 +68,7 @@ function card(inc, openTl) {
       </div>
       ${inc.working ? `<div class="working">${esc(inc.working)}</div>` : ""}
       ${etaLine(inc)}
-      ${inc.plan ? `<div class="plan small"><span class="muted">What staff will do:</span> ${esc(inc.plan)}</div>` : ""}
+      ${inc.plan ? `<div class="plan"><span class="lbl">${icon("wrench")}What staff will do</span>${esc(inc.plan)}</div>` : ""}
       ${timeline(inc, openTl)}
     </div>
     ${asking ? `

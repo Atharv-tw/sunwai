@@ -147,7 +147,7 @@ button:disabled { opacity: .55; cursor: default; transform: none; }
   overflow: hidden; animation: rise .35s ease-out both;
 }
 .inc + .inc { margin-top: 14px; }
-@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
 .inc .head { padding: 16px 18px 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .inc .id { font: 600 12px var(--mono); color: var(--muted); background: var(--surface-2); padding: 4px 7px; border-radius: 6px; }
 .inc .summary { font-weight: 650; font-size: 15.5px; flex: 1 1 100%; order: 10; margin-top: 6px; letter-spacing: -.01em; }
