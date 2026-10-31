@@ -51,6 +51,13 @@ References we used, and what each one told us. Meko behaviour we measured oursel
 - `context_search` returns `results.{knowledge_base, memory, conversation}` plus `match_quality` and `agent_hint`.
 - `memory_promote` returns `inserted_ids`; the memory is **evicted from private memory** and appears in `memory_get_all(promoted=true)` → `promoted_memories[]` (`id`, `agent_id`, `data`). It never showed in `context_search`'s `knowledge_base` bucket (checked again ~35 min later), but **`knowledgebase_search` does return it** as a chunk with `metadata_filters.source = "memory"` and the original `memory_id`.
 - Meko's suggested `agent_id` for coding agents is `<client>:<repo>`, e.g. `claude_code:sunwai`.
+- 31 Oct ~20:15, `syzygy-build` via the `meko` MCP in Claude Code: `memory_add` stored each decision verbatim
+  (`event: ADD`, no rewriting); one `memory_promote` call took all 17 ids. `knowledgebase_search` found D-003
+  for "what did we decide about the stack" about a minute after promotion (so the KB copy is not slow to
+  appear), returning one chunk even with `limit: 5`; the chunk's `id` is new, the original id is in
+  `metadata_filters.memory_id`, and `document_id` is the conversation id. `context_search` (all sources) for
+  the same query returned all buckets empty with `agent_hint` "do not guess; tell the user this datapack does
+  not cover it". `memory_get_all(promoted=true)` lists promoter name and email per row.
 
 ## Meko friction log
 
@@ -64,3 +71,6 @@ One line each: what was awkward, and our workaround. Evidence for `FEATURE_PROPO
 | 31 Oct | Atharv | Every call needs a `conversation_id`, even listing datapacks; tools reject extra args; errors hide inside a JSON string | Client opens one conversation per actor, filters args by schema, unwraps `result` and checks `error` |
 | 31 Oct | Atharv | A promoted memory disappears from `memory_search`/`context_search` memory and isn't in the KB bucket right away, so there is a gap where nobody can recall it | Recall canon with `knowledgebase_search` (finds promoted memories by meaning) and list it with `memory_get_all(promoted=true)` |
 | 31 Oct | Atharv | Datapack names are global across all Meko users, so two teams can't both have `desk` | Team-specific prefix |
+| 31 Oct | Atharv | `context_search` (the docs' "default first call") returns nothing for promoted memories and tells the agent the datapack doesn't cover it: an agent following the docs would miss every team decision | Recall with `knowledgebase_search` + `memory_search` in parallel (D-018) |
+| 31 Oct | Atharv | `knowledgebase_search` trims to the top match (1 result with `limit: 5`), so "list everything about X" needs `memory_get_all(promoted=true)` and client-side filtering | Use `memory_get_all(promoted=true)` for lists, KB search for "the most relevant one" |
+| 31 Oct | Atharv | `memory_get_all(promoted=true)` and `datapack_search` return the owner's name and email in every row | Never log or display raw responses; the client keeps only ids and text |

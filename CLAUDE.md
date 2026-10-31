@@ -10,7 +10,9 @@ Our coding agents share one Meko datapack: **`syzygy-build`**. It holds team dec
 schemas, datapack names and gotchas. Only **promoted** memories reach the rest of the team.
 
 1. **Before every task, recall.** Resolve the `syzygy-build` datapack id once per session
-   (`datapack_search` with `name: "syzygy-build"`), then `context_search` it with the task's keywords.
+   (`datapack_search` with `name: "syzygy-build"`), then search it with the task's keywords using
+   **`knowledgebase_search`** (promoted decisions live there) and `memory_search` (unpromoted summaries),
+   in parallel. Don't rely on `context_search`: it misses promoted memories (D-018).
    Follow any promoted decision you find; if the task conflicts with one, stop and ask.
 2. **When a task ends, save a short summary.** `memory_add` to `syzygy-build`, text starting with your
    teammate name, e.g. `[Alok] summary: swarm view now streams calls over SSE from /api/events`.
