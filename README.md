@@ -24,7 +24,7 @@ cp .env.example .env    # then paste your Meko key into MEKO_API_KEY
 ```
 
 ```bash
-ollama pull qwen3:4b
+ollama pull qwen3:4b-instruct
 ```
 
 ```bash
@@ -32,6 +32,9 @@ uv run sunwai
 ```
 
 Open http://127.0.0.1:8765.
+
+Use `qwen3:4b-instruct`, not plain `qwen3:4b`: that tag is now a thinking-only build that took ~90 s per call in
+our test (D-025). With 8 GB of GPU memory, `ollama pull qwen3:8b` and set `LLM_MODEL=qwen3:8b` in `.env`.
 
 ## Docs
 
