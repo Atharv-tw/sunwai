@@ -49,7 +49,7 @@ References we used, and what each one told us. Meko behaviour we measured oursel
 - `datapack_search` returns `datapacks[].datapack_id` and `datapack_name` (not `id` / `name`), plus owner name and email: don't log raw responses.
 - `memory_add` returns the stored memory; `memory_search` returns `results[]` with `id`, `memory`, `score`, `raw_similarity_score`. Search is cross-agent within datapack + user; `agent_id` is attribution only.
 - `context_search` returns `results.{knowledge_base, memory, conversation}` plus `match_quality` and `agent_hint`.
-- `memory_promote` returns `inserted_ids`; the memory is **evicted from private memory** and appears in `memory_get_all(promoted=true)` → `promoted_memories[]` (`id`, `agent_id`, `data`). It did not show in `context_search`'s `knowledge_base` bucket within the first minute.
+- `memory_promote` returns `inserted_ids`; the memory is **evicted from private memory** and appears in `memory_get_all(promoted=true)` → `promoted_memories[]` (`id`, `agent_id`, `data`). It never showed in `context_search`'s `knowledge_base` bucket (checked again ~35 min later), but **`knowledgebase_search` does return it** as a chunk with `metadata_filters.source = "memory"` and the original `memory_id`.
 - Meko's suggested `agent_id` for coding agents is `<client>:<repo>`, e.g. `claude_code:sunwai`.
 
 ## Meko friction log
@@ -62,5 +62,5 @@ One line each: what was awkward, and our workaround. Evidence for `FEATURE_PROPO
 | 31 Oct | Atharv | Product and coding agents can only be kept apart by convention; a key reaches every datapack in the account | Separate keys per client and a `sunwai-` prefix for product datapacks (D-005, D-010) |
 | 31 Oct | Atharv | Memory search takes ~9 s per call (other calls ~2 s), so an agent that recalls before every step feels slow live | Run all of a step's recalls in parallel; read promoted canon with `memory_get_all(promoted=true)` (~1.8 s) (D-017) |
 | 31 Oct | Atharv | Every call needs a `conversation_id`, even listing datapacks; tools reject extra args; errors hide inside a JSON string | Client opens one conversation per actor, filters args by schema, unwraps `result` and checks `error` |
-| 31 Oct | Atharv | A promoted memory disappears from `memory_search`/`context_search` memory and isn't in the KB bucket right away, so there is a gap where nobody can recall it | Read canon through `memory_get_all(promoted=true)` |
+| 31 Oct | Atharv | A promoted memory disappears from `memory_search`/`context_search` memory and isn't in the KB bucket right away, so there is a gap where nobody can recall it | Recall canon with `knowledgebase_search` (finds promoted memories by meaning) and list it with `memory_get_all(promoted=true)` |
 | 31 Oct | Atharv | Datapack names are global across all Meko users, so two teams can't both have `desk` | Team-specific prefix |

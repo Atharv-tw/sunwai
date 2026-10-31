@@ -37,7 +37,8 @@ Takeaway: every call costs ~2 s; anything that searches memory costs ~9 s, and p
 |---|---|---|
 | Write → searchable lag (memory_add then memory_search finds it) | Found by the first search, 9.4 s after the write, i.e. one search's latency: no extra indexing lag observed | 31 Oct |
 | `memory_get_all(promoted=true)` returns the promoted memory | Yes, under `promoted_memories`, text in `data` | 31 Oct |
-| Promoted memory visible in `context_search` | Not right after promotion: it left the `memory` bucket and was not yet in `knowledge_base` (rechecked ~1 min later) | 31 Oct |
+| Promoted memory visible in `context_search` | No: it left the `memory` bucket and was still absent from the `knowledge_base` bucket ~35 min later | 31 Oct |
+| Promoted memory visible in `knowledgebase_search` | Yes (~35 min after promotion; not checked earlier): a KB chunk with `metadata_filters.source = "memory"` and the original `memory_id` | 31 Oct |
 
 ## Local model
 
