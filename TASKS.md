@@ -60,6 +60,48 @@ what Meko does in Sunwai, mention Meko, YugabyteDB and hackCBS 9.0. Post when At
 
 **Decisions you'll likely make (promote them):** SSE vs polling, edge colour/style per kind, how long edges stay, replay granularity, node layout.
 
+A1–A4 are merged into `main` (04f52f7). Your decisions are renumbered D-034..D-038 in `decisions.md`
+(Meko still holds them as `[Alok] D-020..D-024`). Work on `main` from now on. The video and LinkedIn post (A5)
+move to the very end, recorded by Atharv on your laptop with the finished prototype.
+
+### A6. Make your laptop (RTX 4060) the demo machine: now
+Full runbook: [4060.md](4060.md). Steps:
+
+1. Get the merged code:
+
+   ```bash
+   git checkout main && git pull
+   ```
+
+   ```bash
+   uv sync
+   ```
+
+2. Check the model: `ollama show qwen3:8b` should say context length 40960 (the build that honours
+   `think: false`). Get the fallback too:
+
+   ```bash
+   ollama pull qwen3:4b-instruct
+   ```
+
+3. `.env`: run `cp .env.example .env`, then set `LLM_MODEL=qwen3:8b` and keep `MEKO_DATAPACK_PREFIX=sunwai-` (not
+   your dev prefix). **The Meko key must be from Atharv's account** (the seeded datapacks live there): Atharv
+   generates a key named `sunwai-4060` and types it into your `.env` himself. Never send it over chat.
+4. Test the model only, then put the numbers in the "demo" row of `result.md` (plus your CPU/RAM in "Machines") and push:
+
+   ```bash
+   uv run python scripts/smoke_llm.py
+   ```
+
+   If p50 is above ~10 s, set `LLM_MODEL=qwen3:4b-instruct` and run it again.
+   **Do not run `scripts/smoke_meko.py`**: it creates a datapack, and Atharv's account is at the free-tier limit.
+5. Check Meko through the app: run `uv run sunwai`, open http://127.0.0.1:8765/api/health (expect
+   `meko_enabled: true`, empty `meko_error`), then http://127.0.0.1:8765/swarm.html.
+6. Check T rehearsal: ask your Claude Code "Search syzygy-build in Meko: what did we decide about the stack?".
+   It must answer D-003 from Meko. Tell Atharv if it doesn't.
+7. Right before the demo (Atharv will say when): the final reset, Meko UI cleanup and seed, run **on your
+   laptop** so its local DB is fresh: [4060.md](4060.md) §5b. Then the §7 stage checklist.
+
 ---
 
 ## R1–R4 — privacy, scenario, role screens (was Arun's; Atharv's since D-029)
