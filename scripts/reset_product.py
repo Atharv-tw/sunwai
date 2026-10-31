@@ -6,7 +6,8 @@
 Destructive and one-way: every memory and promoted lesson in sunwai-desk/-hostel/-mess/-it/-canon/-dean is gone.
 The datapacks themselves stay: on the free tier a deleted datapack still counts against the 10-datapack limit, so
 delete + recreate fails (measured 1 Nov). Promoted lessons in sunwai-canon could not be deleted on 1 Nov (both
-Meko delete paths failed); the script tries, reports what is left and exits 1. Stop the app first. The old data/sunwai.db is renamed, not deleted.
+Meko delete paths failed); the script tries, reports what is left and exits 1: delete those by hand in the Meko Cloud
+UI (sunwai-canon). Stop the app first. The old data/sunwai.db is renamed, not deleted.
 Never touches syzygy-build or other datapacks. Then run scripts/seed_history.py to load the scripted past cases.
 """
 

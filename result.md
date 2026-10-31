@@ -110,7 +110,7 @@ pattern-report write skipped).
 |---|---|
 | `sunwai-desk`, `sunwai-dean` | 0 memories |
 | `sunwai-hostel` / `-mess` / `-it` | 4 / 5 / 3 memories: the 12 seeded past-fix notes |
-| `sunwai-canon` | 0 memories, **8 promoted**: the 6 seeded lessons + 2 test lessons the reset could not remove (Hostel A geyser, promoted 31 Oct 20:30 and 1 Nov 00:23 IST) |
+| `sunwai-canon` | 0 memories, 8 promoted after the seed: the 6 seeded lessons + 2 test lessons the reset could not remove (Hostel A geyser, promoted 31 Oct 20:30 and 1 Nov 00:23 IST). Atharv deleted those 2 in the Meko Cloud UI (~01:45): **6 promoted**, all seeded |
 
 - Reset: `memory_delete_all` succeeded on all six datapacks (13 agent ids each). Promoted lessons could not be
   deleted: `knowledgebase_delete_document` returned `NOT_FOUND` for the very `document_id` that `knowledgebase_search`
@@ -118,9 +118,10 @@ pattern-report write skipped).
   JSON serializable`).
 - `knowledgebase_search` on canon finds all 6 seeded lessons: "RO water filter cartridge clogged" → the 4 RO lessons,
   "Wi-Fi down router overheating Block C" → the 2 router lessons, each with its memory id.
-- Dean patterns: Mess RO water 4 verified fixes, about every 40 days, next expected around 2026-11-17; IT router 2,
-  about every 49 days, next around 2026-11-10; and a spurious "Hostel: geyser needed a verified fix 2 times" from the
-  2 leftover test lessons.
+- Dean patterns after the UI deletion: Mess RO water 4 verified fixes, about every 40 days, next expected around
+  2026-11-17; IT router 2, about every 49 days, next around 2026-11-10. (Before it, a spurious "Hostel: geyser needed
+  a verified fix 2 times" came from the 2 leftover test lessons.) No geyser lesson is left in canon, so the demo's
+  Hostel A case plans from the seeded, unverified past fixes.
 
 ## Meko on vs off (product)
 
