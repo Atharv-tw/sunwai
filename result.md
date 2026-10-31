@@ -80,7 +80,7 @@ Takeaway: `knowledgebase_search` (canon) answers in ~1.4 s; `memory_search` cost
 | qwen3:4b (Q4_K_M, thinking build) | dev | not completed | not completed | 87.4 for one call | ~13 |
 | qwen3:8b | demo | | | | |
 
-31 Oct ~21:10 IST, Ollama 0.40.13, GTX 1650 (model split 23% CPU / 77% GPU at 4096 context). The one miss:
+31 Oct ~21:00 IST, Ollama 0.40.13, GTX 1650 (model split 23% CPU / 77% GPU at 4096 context). The one miss:
 "corridor light … someone fell" came back `hostel_electrical`, we expected `safety`.
 `qwen3:4b` on Ollama is now the Qwen3-4B-Thinking-2507 build (256K context, thinking on by default): one triage
 call generated 1165 tokens and took 87.4 s; with `think: false` it still reasoned, in `content` (2288 tokens,
@@ -88,7 +88,7 @@ call generated 1165 tokens and took 87.4 s; with `think: false` it still reasone
 
 ## Meko on vs off (product)
 
-Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct ~21:25 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
+Same scripted scenario, same model. Burst row: `scripts/slice_burst.py`, 31 Oct 21:10–21:16 IST, qwen3:4b-instruct (`LLM_PARALLEL=2`), fresh local DB each side; times are LLM-bound (45 classifications on the GTX 1650). Hostel B rows: `scripts/slice_geyser.py`, 31 Oct, keyword fallback (no LLM), Meko on (port 8765) vs `MEKO_ENABLED=off` (port 8766).
 
 | Measure | Meko on | Meko off |
 |---|---|---|
