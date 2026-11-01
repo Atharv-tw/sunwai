@@ -2,6 +2,7 @@
 
     uv run python scripts/seed_history.py --dry-run      # print what would be written
     uv run python scripts/seed_history.py                # write through sunwai/meko.py (logged, scripted)
+    uv run python scripts/seed_history.py --notes-only   # past-fix notes only, when canon still holds the 6 lessons
 
 Each item {dept, place, date, text, asset?, verified?} becomes a past-fix note in that department's datapack.
 Items with "verified": true are also written to sunwai-canon as lessons and promoted, as if a warden had
@@ -52,6 +53,8 @@ async def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("path", nargs="?", default=str(config.ROOT / "scenarios" / "history.json"))
     ap.add_argument("--dry-run", action="store_true")
+    # the reset can't delete promoted lessons, so a re-seed would promote the same lessons a second time
+    ap.add_argument("--notes-only", action="store_true", help="skip the canon lessons")
     args = ap.parse_args()
     items = json.loads(Path(args.path).read_text())
     items = items.get("items", items) if isinstance(items, dict) else items
@@ -80,7 +83,8 @@ async def main() -> int:
                 return await agents[dept].remember(text, summary=summary, scripted=True)
 
         jobs = [write(d, fix, f"seed past case ({d})") for fix, _, d in planned]
-        jobs += [write("canon", lesson, f"seed verified lesson ({d})") for _, lesson, d in planned if lesson]
+        if not args.notes_only:
+            jobs += [write("canon", lesson, f"seed verified lesson ({d})") for _, lesson, d in planned if lesson]
         ids = await asyncio.gather(*jobs)
         lesson_ids = [i for i in ids[len(planned):] if i]
         if lesson_ids:
