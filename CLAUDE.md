@@ -49,8 +49,9 @@ Never write a number into `result.md` that was not measured; say how it was meas
 - `sunwai/meko.py` — the only place that calls Meko; every call is logged for the swarm view
 - `sunwai/llm.py` — OpenAI-compatible client (Ollama by default)
 - `sunwai/agents/` — one module per agent (desk, department, curator, dean)
-- `sunwai/server.py` — FastAPI app, SSE stream, serves `web/`
-- `web/` — plain HTML/JS/SVG swarm view and role screens, no build step
+- `sunwai/server.py` — FastAPI app, SSE stream, serves the built frontend from `web/`
+- `frontend/` — React + TypeScript role application, Vite config and labeled browser-local demo scenarios
+- `web/` — committed Vite output plus the data-driven Meko swarm view at `/swarm.html`
 - `scripts/` — smoke tests and benchmarks
 
 ## Commands
@@ -60,11 +61,12 @@ uv sync                                  # install deps
 uv run python scripts/smoke_meko.py      # Meko round trip + latency
 uv run python scripts/smoke_llm.py       # local model tool-calling check
 uv run sunwai                            # start the app on http://127.0.0.1:8765
+npm install && npm run build             # rebuild frontend sources into web/
 ```
 
 ## Conventions
 
-- Python 3.11+, type hints, small modules. No front-end build step.
+- Python 3.11+, type hints, small modules. Frontend changes use React + TypeScript and Vite; commit the generated `web/` build because Render serves the prebuilt assets with the Python app.
 - Every Meko call goes through `sunwai/meko.py` so it shows up in the swarm view. No direct MCP calls elsewhere.
 - Nothing shown to a user as "context" unless Meko returned it; show the memory id next to it.
 - Anything scripted (seeded history, fast-forward clock, simulated students) is labelled `SCRIPTED` in the UI.

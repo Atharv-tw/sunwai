@@ -8,6 +8,10 @@ __pycache__/
 *.pyc
 .venv/
 *.egg-info/
+
+# frontend
+node_modules/
+*.tsbuildinfo
 dist/
 build/
 
