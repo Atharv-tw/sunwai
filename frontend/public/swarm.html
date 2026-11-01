@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunwai swarm view</title>
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="swarm.css">
+</head>
+<body class="swarm-page">
+<header class="sw-top">
+  <a class="brand" href="index.html"><span class="logo" id="logo"></span><span><b>Sunwai</b><small>swarm view · every Meko call, live</small></span></a>
+  <div id="meko-badge" class="meko unknown" title="Meko status from /api/health">MEKO …</div>
+  <span class="spacer"></span>
+  <div class="seg" id="window-seg">
+    <button data-w="300" class="on">5 min</button>
+    <button data-w="1800">30 min</button>
+    <button data-w="0">All</button>
+  </div>
+  <button id="live" class="live on" title="Follow live calls"><i></i>LIVE</button>
+  <span id="clock" class="clock num">--:--:--</span>
+  <label class="admin" title="Show datapack housekeeping calls"><input type="checkbox" id="show-admin"> admin</label>
+</header>
+
+<section id="counters">
+  <div class="ctr" data-k="notes" style="--kc:var(--k-write)"><div><b class="num">0</b><span>notes</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+  <div class="ctr" data-k="reads" style="--kc:var(--k-read)"><div><b class="num">0</b><span>reads</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+  <div class="ctr" data-k="promotions" style="--kc:var(--k-promote)"><div><b class="num">0</b><span>promotions</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+  <div class="ctr" data-k="directives" style="--kc:var(--k-share)"><div><b class="num">0</b><span>directives</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+  <div class="ctr" data-k="approvals" style="--kc:var(--k-approval)"><div><b class="num">0</b><span>approvals</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+  <div class="ctr err" data-k="errors" style="--kc:var(--k-error)"><div><b class="num">0</b><span>errors</span></div><svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline/></svg></div>
+</section>
+
+<main class="sw-main">
+  <div id="stage">
+    <div id="world">
+      <svg id="graph" viewBox="0 0 1000 560" width="1000" height="560">
+        <defs>
+          <radialGradient id="hubg" cx="50%" cy="40%" r="65%">
+            <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eef2ff"/>
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <g id="orbits"></g>
+        <g id="edges"></g>
+        <g id="particles"></g>
+      </svg>
+      <div id="hub"><div class="hub-core"><b>MEKO</b><span id="hub-sub">one datapack per agent</span></div></div>
+      <div id="nodes"></div>
+    </div>
+    <div id="off-note" hidden>
+      <b>Meko is off</b>
+      <span>No recall, no notes between departments, no verified lessons. Every case starts from zero.</span>
+    </div>
+    <div class="legend">
+      <span><i style="--kc:var(--k-write)"></i>write</span><span><i style="--kc:var(--k-read)"></i>read</span>
+      <span><i style="--kc:var(--k-share)"></i>share</span><span><i style="--kc:var(--k-promote)"></i>promote</span>
+      <span><i style="--kc:var(--k-approval)"></i>approval</span><span><i style="--kc:var(--k-error)"></i>error</span>
+    </div>
+  </div>
+  <aside class="rail">
+    <div id="panel" hidden>
+      <div class="panel-head">
+        <span class="pav" id="panel-av"></span>
+        <div><b id="panel-title"></b><small id="panel-sub"></small></div>
+        <button id="panel-close" title="Close">&times;</button>
+      </div>
+      <ul id="panel-list" class="feed"></ul>
+    </div>
+    <div class="stream-head"><b>What was said</b><span id="stream-n" class="num"></span></div>
+    <ul id="stream" class="feed"></ul>
+  </aside>
+</main>
+
+<footer class="sw-time">
+  <button id="play" title="Replay history from the slider position">&#9654;</button>
+  <span id="t-start" class="num"></span>
+  <div class="track">
+    <svg id="hist" viewBox="0 0 1000 40" preserveAspectRatio="none"></svg>
+    <input id="slider" type="range" min="0" max="1000" value="1000" aria-label="Replay position">
+  </div>
+  <span id="t-end" class="num"></span>
+</footer>
+<script src="common.js"></script>
+<script src="swarm.js"></script>
+</body>
+</html>
