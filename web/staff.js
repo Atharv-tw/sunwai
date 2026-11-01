@@ -1,6 +1,7 @@
 // Staff screens: department queues (caretaker, warden, mess committee, IT cell), electricity, dean.
 const role = new URLSearchParams(location.search).get("role") || "caretaker";
 const main = document.getElementById("main");
+document.body.classList.add(`role-${role}`);
 header(role);
 document.title = `Sunwai · ${ROLE_LABEL[role] || role}`;
 
@@ -19,11 +20,11 @@ function queueView(dept) {
   main.innerHTML = `
     <div class="pagehead">
       <div><span class="eyebrow">You are the ${esc(ROLE_LABEL[role])}</span><h1>${DEPT_LABEL[dept]} queue</h1>
-        <div class="sub">Plans and ETAs come from what the ${DEPT_LABEL[dept]} agent recalled from Meko. Each context card shows
-          the datapack and memory id it came from.</div></div>
+        <div class="sub">Review incoming work, act on the cases waiting for you, and see the context behind each proposed plan.</div></div>
       <span class="spacer" style="flex:1"></span>
-      <label class="row small" style="margin:0;font-weight:500"><input type="checkbox" id="all"> show closed</label>
+      <label class="row small" style="margin:0;font-weight:600"><input type="checkbox" id="all"> Show closed</label>
     </div>
+    <div id="queue-metrics" class="queue-metrics" aria-label="Queue summary"></div>
     <div id="list"></div>`;
   const list = document.getElementById("list");
   const all = document.getElementById("all");
@@ -113,6 +114,14 @@ function queueView(dept) {
   const refresh = startPolling(async () => {
     const r = await api(`/api/incidents?dept=${dept}`);
     if (!r.ok) { list.innerHTML = `<div class="empty">${esc(r.error)}</div>`; return; }
+    const allRows = r.data;
+    const waiting = allRows.filter(i => i.awaiting === role || (i.awaiting === "caretaker" && role === "warden")).length;
+    const active = allRows.filter(i => OPEN.includes(i.status)).length;
+    const lessons = allRows.filter(i => i.status === "lesson_pending").length;
+    document.getElementById("queue-metrics").innerHTML = `
+      <div class="queue-metric"><b>${waiting}</b><span>Waiting on you</span></div>
+      <div class="queue-metric"><b>${active}</b><span>Active cases</span></div>
+      <div class="queue-metric"><b>${lessons}</b><span>Lessons to review</span></div>`;
     const rows = r.data.filter(i => all.checked || i.status !== "closed");
     rows.sort((a, b) => rank(a) - rank(b));
     keyedRender(list, rows, card, all.checked ? "No incidents yet." : "Nothing open. Tick “show closed” for history.");
@@ -125,10 +134,11 @@ function electricityView() {
   const later = new Date(Date.now() + 60 * 60 * 1000);
   const hh = String(later.getHours()).padStart(2, "0"), mm = String(later.getMinutes()).padStart(2, "0");
   main.innerHTML = `
+    <div class="pagehead"><div><span class="eyebrow">You are Electricity</span><h1>Campus power updates</h1>
+      <div class="sub">Share outages with Hostel and IT teams so affected repair plans can adjust their ETAs.</div></div></div>
     <div class="cols">
       <form class="panel stack" id="cut">
-        <span class="eyebrow">You are Electricity</span>
-        <h2>Record a power cut</h2>
+        <h2>Record an outage</h2>
         <p class="note">Written as a note into the Hostel and IT agents' datapacks (a <b>share</b> in the swarm view), so their
           open incidents in that building move their ETA and say why.</p>
         <div><label for="place">Where</label>
@@ -139,7 +149,7 @@ function electricityView() {
         <div class="toast" id="res"></div>
       </form>
       <section>
-        <h2 style="margin-bottom:10px">Open hostel and IT incidents</h2>
+        <span class="eyebrow">Live impact</span><h2 style="margin:4px 0 14px">Open Hostel and IT incidents</h2>
         <div id="list"></div>
       </section>
     </div>`;
@@ -180,15 +190,15 @@ function electricityView() {
 
 function deanView() {
   main.innerHTML = `
-    <div class="pagehead"><div><span class="eyebrow">You are the Dean</span><h1>Verified patterns</h1></div></div>
+    <div class="pagehead"><div><span class="eyebrow">You are the Dean</span><h1>Campus reliability</h1>
+      <div class="sub">Patterns from verified fixes, approved by the people responsible. Every claim links back to its canon memory.</div></div></div>
     <div class="panel">
-      <p class="note">The Dean reads only campus canon: lessons that students confirmed held and a warden or committee approved,
-        promoted to <span class="mono">sunwai-canon</span>. No anecdotes, no unverified complaints. Each pattern cites its lessons'
-        memory ids. Refreshes every 15 s (reading canon is a Meko call, cached for a minute).</p>
+      <div class="section-title" style="margin:0 0 14px"><h2>Verified patterns</h2><span class="chip">Campus canon</span></div>
+      <p class="note">Only student-confirmed lessons approved by a warden or committee are included. Each pattern cites the Meko memory ids behind it.</p>
       <div id="patterns" class="stack" style="margin-top:12px"></div>
     </div>
     <div class="panel">
-      <h2>Lessons in canon</h2>
+      <div class="section-title" style="margin:0 0 14px"><h2>Verified lesson library</h2><span class="muted small">sunwai-canon</span></div>
       <div id="lessons" style="margin-top:10px"></div>
     </div>`;
   const pEl = document.getElementById("patterns"), lEl = document.getElementById("lessons");

@@ -6,9 +6,11 @@
   <title>Sunwai · Student</title>
   <link rel="stylesheet" href="common.css">
 </head>
-<body>
+<body class="student-page">
   <main class="cols">
     <section>
+      <div class="pagehead"><div><span class="eyebrow">Student portal</span><h1>Get help with a campus issue.</h1>
+        <div class="sub">Tell us what happened. Follow the response and confirm when a fix holds.</div></div></div>
       <div class="panel stack">
         <div>
           <label for="who">You are</label>
@@ -17,7 +19,7 @@
         </div>
       </div>
       <form class="panel stack" id="complain">
-        <h2>Tell us what's wrong</h2>
+        <h2>Report an issue</h2>
         <div>
           <label for="text">In your own words: any language, typos are fine. Say where.</label>
           <textarea id="text" required placeholder="e.g. Hostel B 3rd floor geyser not giving hot water since morning"></textarea>
@@ -32,9 +34,9 @@
       </form>
     </section>
     <section>
-      <div class="row" style="margin-bottom:10px">
-        <h2>Your complaints</h2>
-        <span class="muted small">updates every 2 s</span>
+      <div class="pagehead">
+        <div><span class="eyebrow">Your activity</span><h2>Your reports</h2>
+        <div class="sub">Updates automatically as staff and agents work on your reports.</div></div>
       </div>
       <div id="list"></div>
     </section>
