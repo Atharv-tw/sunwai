@@ -3,14 +3,14 @@ body.swarm-page { height: 100vh; overflow: hidden; display: grid; grid-template-
 
 /* ---------- top ---------- */
 .sw-top {
-  display: flex; align-items: center; gap: 12px; padding: 9px 18px; background: rgba(255, 255, 255, .9);
+  display: flex; align-items: center; gap: 12px; padding: 10px 22px; background: rgba(255, 255, 255, .96);
   border-bottom: 1px solid var(--line); backdrop-filter: blur(10px);
 }
 .sw-top .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); }
 .sw-top .brand:hover { text-decoration: none; }
 .sw-top .logo {
   width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6 55%, #ec4899); box-shadow: 0 4px 12px rgba(99, 102, 241, .35);
+  background: #191918; box-shadow: 0 4px 12px rgba(25, 25, 24, .16);
 }
 .sw-top .brand b { font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
 .sw-top .brand small { display: block; font-size: 11px; color: var(--muted); margin-top: -2px; }
@@ -47,16 +47,16 @@ body.swarm-page { height: 100vh; overflow: hidden; display: grid; grid-template-
 .sw-main { display: grid; grid-template-columns: 1fr 340px; gap: 12px; padding: 10px 18px; min-height: 0; max-width: none; margin: 0; width: 100%; }
 #stage {
   position: relative; min-height: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
-  background-color: var(--surface);
-  background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1.2px);
-  background-size: 22px 22px;
+  background-color: #f7f5f0;
+  background-image: radial-gradient(circle, #ddd8ce 1px, transparent 1.2px);
+  background-size: 24px 24px;
 }
 #world { position: absolute; left: 0; top: 0; width: 1000px; height: 560px; transform-origin: 0 0; }
 #graph { position: absolute; inset: 0; overflow: visible; }
 
 /* orbit decoration (static, not data) */
-#orbits ellipse { fill: none; stroke: #e0e7ff; stroke-width: 1.2; stroke-dasharray: 3 6; }
-#orbits line { stroke: #eef0f6; stroke-width: 1.5; }
+#orbits ellipse { fill: none; stroke: #ded8ce; stroke-width: 1.2; stroke-dasharray: 3 6; }
+#orbits line { stroke: #e9e5dc; stroke-width: 1.5; }
 
 /* edges + particles */
 .edge { fill: none; stroke-width: 2.4; stroke-linecap: round; opacity: .9; transition: opacity 1.2s; }
@@ -75,16 +75,16 @@ body.swarm-page { height: 100vh; overflow: hidden; display: grid; grid-template-
 #hub { position: absolute; left: 440px; top: 220px; width: 120px; height: 120px; }
 #hub::before, #hub::after {
   content: ""; position: absolute; inset: -18px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, .14), rgba(99, 102, 241, 0) 70%);
+  background: radial-gradient(circle, rgba(159, 137, 104, .16), rgba(159, 137, 104, 0) 70%);
   animation: hub-breathe 4s ease-in-out infinite;
 }
 #hub::after { inset: -38px; animation-delay: -2s; opacity: .7; }
 .hub-core {
   position: absolute; inset: 0; border-radius: 50%; display: grid; place-content: center; text-align: center; z-index: 2;
-  background: radial-gradient(circle at 50% 35%, #fff, #eef2ff); border: 1px solid #c7d2fe;
-  box-shadow: 0 10px 30px rgba(79, 70, 229, .18), inset 0 -6px 16px rgba(99, 102, 241, .08);
+  background: radial-gradient(circle at 50% 35%, #fff, #eee9df); border: 1px solid #d6cbbb;
+  box-shadow: 0 10px 30px rgba(79, 67, 48, .13), inset 0 -6px 16px rgba(159, 137, 104, .08);
 }
-.hub-core b { font-size: 19px; font-weight: 800; letter-spacing: .14em; background: linear-gradient(90deg, #4f46e5, #8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hub-core b { font-size: 19px; font-weight: 800; letter-spacing: .14em; color: #292822; }
 .hub-core span { font-size: 10.5px; color: var(--muted); font-weight: 600; max-width: 96px; line-height: 1.25; margin-top: 2px; }
 .ripple { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 2px solid var(--kc); animation: ripple 1.4s ease-out forwards; pointer-events: none; z-index: 1; }
 @keyframes ripple { from { transform: scale(.95); opacity: .8; } to { transform: scale(2.1); opacity: 0; } }
@@ -147,7 +147,7 @@ body.swarm-page { height: 100vh; overflow: hidden; display: grid; grid-template-
 }
 .dpk svg.ic { width: 13px; height: 13px; color: var(--hue); }
 .dpk .n { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; }
-.dpk.canon { background: #fffbeb; border-color: #fde68a; }
+.dpk.canon { background: #f4eddf; border-color: #d9c8a8; }
 .dpk.hit { border-color: var(--kc); box-shadow: 0 0 0 4px color-mix(in srgb, var(--kc) 22%, transparent); }
 .dpk.burst::after { content: ""; position: absolute; inset: -6px; border-radius: 999px; border: 2px solid var(--k-promote); animation: ripple-s 1.2s ease-out forwards; }
 @keyframes ripple-s { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.6); } }
@@ -176,14 +176,14 @@ body.meko-off #hub::before, body.meko-off #hub::after { animation: none; opacity
 body.meko-off .dpk { opacity: .45; }
 #off-note {
   position: absolute; right: 12px; bottom: 10px; z-index: 9; display: grid; gap: 2px; text-align: left; max-width: 300px;
-  background: var(--surface); border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 20px; box-shadow: var(--shadow-lg);
+  background: var(--surface); border: 1px solid #e7c6c6; border-radius: 14px; padding: 12px 20px; box-shadow: var(--shadow-lg);
 }
 #off-note b { color: var(--bad); font-size: 15px; }
 #off-note span { color: var(--muted); font-size: 12.5px; max-width: 420px; }
 
 .legend {
   position: absolute; left: 12px; bottom: 10px; display: flex; gap: 12px; flex-wrap: wrap; z-index: 6;
-  background: rgba(255, 255, 255, .9); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 11px; color: var(--muted); font-weight: 600;
+  background: rgba(255, 255, 255, .96); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; font-size: 11px; color: var(--muted); font-weight: 600;
 }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 14px; height: 3px; border-radius: 2px; background: var(--kc); }
