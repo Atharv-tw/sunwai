@@ -43,7 +43,8 @@ def load() -> Settings:
         llm_model=os.getenv("LLM_MODEL", "qwen3:4b-instruct"),
         llm_api_key=os.getenv("LLM_API_KEY", "ollama"),
         llm_parallel=int(os.getenv("LLM_PARALLEL", "2")),
-        host=os.getenv("SUNWAI_HOST", "127.0.0.1"),
-        port=int(os.getenv("SUNWAI_PORT", "8765")),
+        # a host that sets PORT (Render, Railway, Fly) wants a public listener on that port
+        host=os.getenv("SUNWAI_HOST") or ("0.0.0.0" if os.getenv("PORT") else "127.0.0.1"),
+        port=int(os.getenv("SUNWAI_PORT") or os.getenv("PORT") or "8765"),
         db_path=ROOT / os.getenv("SUNWAI_DB", "data/sunwai.db"),
     )
